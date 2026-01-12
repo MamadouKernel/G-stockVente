@@ -1,0 +1,80 @@
+@model G_StockVente.Domain.Models.Boutique
+@{
+    ViewData["Title"] = "Détails de la boutique";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title" style="font-size:22px;">Boutique</h2>
+        <p class="page-subtitle">@Model.Nom</p>
+    </div>
+    <div class="page-actions">
+        @if (User.IsInRole("AdminReseau"))
+        {
+            <a asp-action="Organigramme" asp-route-id="@Model.Id" class="btn btn-outline-primary me-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Organigramme
+            </a>
+        }
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Modifier</a>
+        <a asp-action="Index" class="btn btn-outline-primary">Retour</a>
+    </div>
+</div>
+
+<div class="surface padded">
+    <div class="card border-0 shadow-none">
+        <div class="card-header">Informations</div>
+        <div class="card-body px-0">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Nom</dt>
+                <dd class="col-sm-9"><strong>@Model.Nom</strong></dd>
+
+                <dt class="col-sm-3">Adresse</dt>
+                <dd class="col-sm-9">@(Model.Adresse ?? "-")</dd>
+
+                <dt class="col-sm-3">Téléphone</dt>
+                <dd class="col-sm-9">@(Model.Telephone ?? "-")</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@(Model.Email ?? "-")</dd>
+
+                <dt class="col-sm-3">TVA par défaut</dt>
+                <dd class="col-sm-9">@Model.TvaParDefaut.ToString("F2")%</dd>
+
+                <dt class="col-sm-3">Statut</dt>
+                <dd class="col-sm-9">
+                    @if (Model.EstActive)
+                    {
+                        <span class="badge text-bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">Inactive</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Date de création</dt>
+                <dd class="col-sm-9">@Model.DateCreation.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Dépôts</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Depots != null && Model.Depots.Any())
+                    {
+                        <ul class="mb-0">
+                            @foreach (var depot in Model.Depots)
+                            {
+                                <li>@depot.Nom</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Aucun dépôt</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+

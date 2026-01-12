@@ -1,0 +1,130 @@
+@model G_StockVente.Controllers.UtilisateurDetailsViewModel
+@{
+    ViewData["Title"] = "Détails de l'utilisateur";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title" style="font-size:22px;">Utilisateur</h2>
+        <p class="page-subtitle">@Model.Prenom @Model.Nom</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Modifier</a>
+        <a asp-action="Index" class="btn btn-outline-primary">Retour</a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="surface padded">
+            <div class="card border-0 shadow-none">
+                <div class="card-header">Informations</div>
+                <div class="card-body px-0">
+                    <dl class="row mb-0">
+                    <dt class="col-sm-3">Nom complet</dt>
+                    <dd class="col-sm-9"><strong>@Model.Prenom @Model.Nom</strong></dd>
+
+                    <dt class="col-sm-3">Email</dt>
+                    <dd class="col-sm-9">@Model.Email</dd>
+
+                    <dt class="col-sm-3">Nom d'utilisateur</dt>
+                    <dd class="col-sm-9">@Model.UserName</dd>
+
+                    <dt class="col-sm-3">Boutique active</dt>
+                    <dd class="col-sm-9">@(Model.BoutiqueActiveNom ?? "-")</dd>
+
+                    <dt class="col-sm-3">Statut</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.EstActif)
+                        {
+                            <span class="badge bg-success">Actif</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactif</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Rôles</dt>
+                    <dd class="col-sm-9">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <span class="badge bg-info me-1">@role</span>
+                        }
+                        @if (!Model.Roles.Any())
+                        {
+                            <span class="text-muted">Aucun rôle</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Date de création</dt>
+                    <dd class="col-sm-9">@Model.DateCreation.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-3">Dernière connexion</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.DateDerniereConnexion.HasValue)
+                        {
+                            @Model.DateDerniereConnexion.Value.ToString("dd/MM/yyyy HH:mm")
+                        }
+                        else
+                        {
+                            <span class="text-muted">Jamais</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Changement de mot de passe</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.MustChangePassword)
+                        {
+                            <span class="badge text-bg-warning">Requis</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-success">Non requis</span>
+                        }
+                    </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Réinitialisation du mot de passe -->
+        <div class="surface padded mt-3">
+            <div class="card border-0 shadow-none">
+                <div class="card-header">Réinitialiser le mot de passe</div>
+                <div class="card-body px-0">
+                <form asp-action="ResetPassword" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir réinitialiser le mot de passe ?');">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="password" name="newPassword" class="form-control" placeholder="Nouveau mot de passe" required minlength="6" />
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-warning w-100">Réinitialiser</button>
+                        </div>
+                    </div>
+                    <small class="form-text text-muted">L'utilisateur devra changer ce mot de passe à la prochaine connexion.</small>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

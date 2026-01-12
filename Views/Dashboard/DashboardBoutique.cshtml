@@ -1,0 +1,303 @@
+@{
+    ViewData["Title"] = "Tableau de bord";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var boutique = ViewBag.Boutique as G_StockVente.Domain.Models.Boutique;
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Tableau de bord</h1>
+        <p class="page-subtitle">@boutique?.Nom · @DateTime.Now.ToString("dddd dd MMMM yyyy · HH:mm", new System.Globalization.CultureInfo("fr-FR"))</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Rapports" asp-action="Index" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            Rapports
+        </a>
+        <a asp-controller="Ventes" asp-action="Caisse" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nouvelle vente
+        </a>
+    </div>
+</div>
+
+<!-- Indicateurs clés -->
+<div class="row g-4 mb-6">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="kpi kpi--primary">
+            <div class="kpi__label">Ventes aujourd'hui</div>
+            <div class="kpi__value">@ViewBag.VentesAujourdhui</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="kpi kpi--success">
+            <div class="kpi__label">CA aujourd'hui</div>
+            <div class="kpi__value">@(((decimal)ViewBag.CAAujourdhui).ToString("N0", new System.Globalization.CultureInfo("fr-FR"))) €</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="kpi kpi--info">
+            <div class="kpi__label">CA ce mois</div>
+            <div class="kpi__value">@(((decimal)ViewBag.CAMois).ToString("N0", new System.Globalization.CultureInfo("fr-FR"))) €</div>
+            @{
+                var evolution = (decimal)ViewBag.EvolutionCA;
+                var evolutionClass = evolution >= 0 ? "text-success" : "text-danger";
+                var evolutionIcon = evolution >= 0 ? "↑" : "↓";
+            }
+            <div class="kpi__footer @evolutionClass">
+                @evolutionIcon @Math.Abs(evolution).ToString("F1")% vs mois précédent
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="kpi kpi--warning">
+            <div class="kpi__label">Stocks bas</div>
+            <div class="kpi__value">@ViewBag.StocksBas</div>
+            <div class="kpi__footer">
+                <a asp-controller="Stocks" asp-action="Index" asp-route-stockBas="true" class="text-sm" style="color: inherit; font-weight: 600; text-decoration: underline;">Voir le détail →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Graphique ventes 7 derniers jours -->
+    <div class="col-12 col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">Évolution des ventes</div>
+                    <small class="text-muted">7 derniers jours</small>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="ventesChart" style="max-height: 280px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top produits -->
+    <div class="col-12 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <div style="font-weight: 600; margin-bottom: 4px;">Top produits</div>
+                <small class="text-muted">Ce mois</small>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                @if (ViewBag.TopProduits != null && ((IEnumerable<dynamic>)ViewBag.TopProduits).Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @{
+                            var index = 1;
+                        }
+                        @foreach (var produit in ViewBag.TopProduits as dynamic)
+                        {
+                            <div class="list-group-item d-flex align-items-center gap-3">
+                                <div class="text-muted font-bold" style="min-width: 24px; font-weight: 700; font-size: 20px; opacity: 0.3;">@index</div>
+                                <div class="flex-grow-1">
+                                    <div style="font-weight: 600; font-size: 14px; margin-bottom: 2px;">@produit.ProduitNom</div>
+                                    <small class="text-muted">@produit.QuantiteVendue unités</small>
+                                </div>
+                                <div class="badge badge-primary">@(((decimal)produit.MontantTotal).ToString("N0", new System.Globalization.CultureInfo("fr-FR"))) €</div>
+                            </div>
+                            index++;
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state" style="min-height: 200px; margin: 20px;">
+                        <div class="empty-state-icon">📦</div>
+                        <div class="empty-state-message">Aucune vente ce mois</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    <!-- Alertes -->
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <div style="font-weight: 600;">Alertes & Notifications</div>
+            </div>
+            <div class="card-body">
+                @{
+                    var hasAlerts = ViewBag.StocksBas > 0 || ViewBag.AchatsEnAttente > 0 || ViewBag.InventairesEnCours > 0;
+                }
+                @if (hasAlerts)
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @if (ViewBag.StocksBas > 0)
+                        {
+                            <div class="alert alert-warning d-flex align-items-center gap-3">
+                                <div class="alert-icon">⚠️</div>
+                                <div class="flex-grow-1">
+                                    <strong>@ViewBag.StocksBas</strong> produit(s) en stock bas
+                                </div>
+                                <a asp-controller="Stocks" asp-action="Index" asp-route-stockBas="true" class="btn btn-sm btn-warning">Voir</a>
+                            </div>
+                        }
+                        @if (ViewBag.AchatsEnAttente > 0)
+                        {
+                            <div class="alert alert-info d-flex align-items-center gap-3">
+                                <div class="alert-icon">ℹ️</div>
+                                <div class="flex-grow-1">
+                                    <strong>@ViewBag.AchatsEnAttente</strong> achat(s) en attente
+                                </div>
+                                <a asp-controller="Achats" asp-action="Index" asp-route-statut="1" class="btn btn-sm btn-info">Voir</a>
+                            </div>
+                        }
+                        @if (ViewBag.InventairesEnCours > 0)
+                        {
+                            <div class="alert alert-primary d-flex align-items-center gap-3">
+                                <div class="alert-icon">📋</div>
+                                <div class="flex-grow-1">
+                                    <strong>@ViewBag.InventairesEnCours</strong> inventaire(s) en cours
+                                </div>
+                                <a asp-controller="Inventaires" asp-action="Index" asp-route-statut="1" class="btn btn-sm btn-primary">Voir</a>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state" style="min-height: 150px;">
+                        <div class="empty-state-icon">✓</div>
+                        <div class="empty-state-message">Tout est en ordre, aucune alerte pour le moment.</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <div style="font-weight: 600;">Actions rapides</div>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a asp-controller="Ventes" asp-action="Caisse" class="btn btn-primary btn-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+                        Nouvelle vente
+                    </a>
+                    <a asp-controller="Achats" asp-action="Create" class="btn btn-outline-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                        Nouvel achat
+                    </a>
+                    <a asp-controller="Inventaires" asp-action="Create" class="btn btn-outline-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H2v7l6.29 6.29c.94.94 2.48.94 3.42 0l3.58-3.58c.94-.94.94-2.48 0-3.42L9 5z"></path><path d="M6 9.01V9"></path></svg>
+                        Nouvel inventaire
+                    </a>
+                    <a asp-controller="Produits" asp-action="Index" class="btn btn-outline-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        Gérer les produits
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ventesData = @Html.Raw(Json.Serialize(ViewBag.VentesParJour));
+        
+        const ctx = document.getElementById('ventesChart').getContext('2d');
+        
+        // Create gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ventesData.map(v => {
+                    const date = new Date(v.date);
+                    return date.toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+                }),
+                datasets: [{
+                    label: 'Montant',
+                    data: ventesData.map(v => v.montant),
+                    borderColor: '#2563eb',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#2563eb',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#ffffff',
+                        titleColor: '#111827',
+                        bodyColor: '#6b7280',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        padding: 12,
+                        boxPadding: 6,
+                        usePointStyle: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' €';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f3f4f6',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString('fr-FR') + ' €';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}
+

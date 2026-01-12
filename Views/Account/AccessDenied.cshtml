@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Accès refusé";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="surface padded">
+    <div class="page-header mb-2">
+        <div>
+            <h2 class="page-title" style="font-size:22px;">Accès refusé</h2>
+            <p class="page-subtitle">Vous n’avez pas les autorisations nécessaires.</p>
+        </div>
+        <div class="page-actions">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary">Retour à l’accueil</a>
+        </div>
+    </div>
+
+    <div class="alert alert-warning mb-0">
+        Si vous pensez que c’est une erreur, contactez l’administrateur réseau.
+    </div>
+</div>
+

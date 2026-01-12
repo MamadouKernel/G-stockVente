@@ -1,0 +1,129 @@
+@model G_StockVente.Domain.Models.Depot
+@{
+    ViewData["Title"] = "Nouveau dépôt";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3481c0 0%, #2563eb 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(52, 129, 192, 0.3);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            </div>
+            <div>
+                <h1 class="page-title" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1.2;">Nouveau dépôt</h1>
+                <p class="page-subtitle" style="margin: 4px 0 0; color: #667085; font-size: 14px;">Création d'un nouveau dépôt de stock</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row form-page-container">
+    <div class="col-12 col-lg-10">
+        <div class="card surface" style="border-left: 4px solid #3481c0;">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.05) 0%, rgba(219, 180, 56, 0.03) 100%); border-bottom: 1px solid rgba(52, 129, 192, 0.15);">
+                <div style="font-weight: 600; color: #3481c0; font-size: 16px;">Informations générales</div>
+                <small class="text-muted" style="font-size: 13px;">Détails du dépôt</small>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" novalidate id="createForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" style="border-left: 4px solid #ef4444; border-radius: 12px;"></div>
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label asp-for="Nom" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg>
+                                Nom du dépôt <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Nom" 
+                                   class="form-control" 
+                                   style="height: 44px; padding: 12px 16px; font-size: 14px; border-radius: 10px; border: 1.5px solid rgba(16, 24, 40, 0.1); transition: all 0.2s ease;"
+                                   placeholder="Ex: Dépôt principal, Dépôt annexe..."
+                                   autofocus
+                                   required />
+                            <span asp-validation-for="Nom" class="form-error"></span>
+                        </div>
+
+                        @if (User.IsInRole("AdminReseau"))
+                        {
+                            <div class="col-12">
+                                <label asp-for="BoutiqueId" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #dbb438;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                    Boutique <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="BoutiqueId" 
+                                        asp-items="ViewBag.BoutiqueId" 
+                                        class="form-select"
+                                        style="height: 44px; padding: 12px 16px; font-size: 14px; border-radius: 10px; border: 1.5px solid rgba(16, 24, 40, 0.1); transition: all 0.2s ease;"
+                                        required>
+                                    <option value="">-- Sélectionner une boutique --</option>
+                                </select>
+                                <span asp-validation-for="BoutiqueId" class="form-error"></span>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="BoutiqueId" />
+                        }
+
+                        <div class="col-12">
+                            <label asp-for="Adresse" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                Adresse
+                            </label>
+                            <input asp-for="Adresse" 
+                                   class="form-control" 
+                                   style="height: 44px; padding: 12px 16px; font-size: 14px; border-radius: 10px; border: 1.5px solid rgba(16, 24, 40, 0.1); transition: all 0.2s ease;"
+                                   placeholder="Adresse complète du dépôt" />
+                            <span asp-validation-for="Adresse" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12 d-flex align-items-end">
+                            <div class="form-check" style="padding-top: 12px;">
+                                <input asp-for="EstActif" 
+                                       class="form-check-input" 
+                                       type="checkbox" 
+                                       checked 
+ />
+                                <label asp-for="EstActif" class="form-check-label" style="font-weight: 500; cursor: pointer; margin-left: 10px; color: #101828; font-size: 14px;">
+                                    Dépôt actif
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="margin: 32px 0; border: none; border-top: 1px solid rgba(16, 24, 40, 0.1);" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="btn btn-outline-primary" style="height: 44px; font-weight: 600; min-width: 120px; border-radius: 10px; padding: 10px 20px;">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submitButton" style="height: 44px; font-weight: 600; min-width: 140px; border-radius: 10px; padding: 10px 20px; box-shadow: 0 4px 12px rgba(52, 129, 192, 0.25);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Créer le dépôt
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('createForm')?.addEventListener('submit', function(e) {
+            const button = document.getElementById('submitButton');
+            if (button && !button.disabled) {
+                LoadingState.show(button);
+            }
+        });
+    </script>
+}
+

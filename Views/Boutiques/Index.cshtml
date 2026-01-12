@@ -1,0 +1,84 @@
+@model IEnumerable<G_StockVente.Domain.Models.Boutique>
+@{
+    ViewData["Title"] = "Liste des boutiques";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title" style="font-size:22px;">Boutiques</h2>
+        <p class="page-subtitle">Réseau, paramètres et dépôts.</p>
+    </div>
+    <div class="page-actions">
+        @if (User.IsInRole("AdminReseau"))
+        {
+            <a asp-action="Create" class="btn btn-primary">Nouvelle boutique</a>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Liste</div>
+    <div class="card-body">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">Aucune boutique.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Boutique</th>
+                            <th>Adresse</th>
+                            <th>Téléphone</th>
+                            <th>Email</th>
+                            <th class="text-end">TVA</th>
+                            <th>Statut</th>
+                            <th style="width: 220px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.Nom</strong></td>
+                                <td>@(item.Adresse ?? "-")</td>
+                                <td>@(item.Telephone ?? "-")</td>
+                                <td>@(item.Email ?? "-")</td>
+                                <td class="text-end">@item.TvaParDefaut.ToString("F2")%</td>
+                                <td>
+                                    @if (item.EstActive)
+                                    {
+                                        <span class="badge text-bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge text-bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Actions">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id" title="Détails">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            </a></li>
+                                            <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id" title="Modifier">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

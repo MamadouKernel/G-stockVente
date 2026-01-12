@@ -1,0 +1,201 @@
+@model IEnumerable<G_StockVente.Domain.Models.Stock>
+@{
+    ViewData["Title"] = "Stocks";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var total = Model?.Count() ?? 0;
+    var totalStockBas = Model?.Count(s => s.ProduitBoutique.SeuilStockBas > 0 && s.Quantite <= s.ProduitBoutique.SeuilStockBas) ?? 0;
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Stocks</h1>
+        <p class="page-subtitle">Suivi par dépôt, alertes et ajustements</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Mouvements" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Mouvements
+        </a>
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-4 mb-6">
+    <div class="col-12 col-sm-6">
+        <div class="kpi kpi--primary">
+            <div class="kpi__label">Lignes de stock</div>
+            <div class="kpi__value">@total</div>
+            <div class="kpi__footer">Total d'enregistrements</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6">
+        <div class="kpi kpi--warning">
+            <div class="kpi__label">Stock bas</div>
+            <div class="kpi__value">@totalStockBas</div>
+            <div class="kpi__footer">
+                @if (totalStockBas > 0)
+                {
+                    <span>⚠️ Attention requise</span>
+                }
+                else
+                {
+                    <span>✓ Aucune alerte</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-12 col-md-6 col-lg-5">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Dépôt
+                </label>
+                <select name="depotId" 
+                        class="form-select" 
+                        style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                        asp-items="ViewBag.Depots"
+                        aria-label="Filtrer par dépôt">
+                    <option value="">📦 Tous les dépôts</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    Niveau de stock
+                </label>
+                <select name="stockBas" 
+                        class="form-select" 
+                        style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                        aria-label="Filtrer par niveau de stock">
+                    <option value="">Tous les niveaux</option>
+                    <option value="true" selected="@(ViewBag.StockBas == true)">⚠️ Stock bas uniquement</option>
+                </select>
+            </div>
+            <div class="col-12 col-lg-3">
+                <button type="submit" class="btn btn-primary w-100" style="height: 42px; font-weight: 600;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: var(--space-2);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                    Appliquer les filtres
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Stock List -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <div style="font-weight: 600;">Inventaire</div>
+            @if (Model != null && Model.Any())
+            {
+                <small class="text-muted">@Model.Count() enregistrement(s)</small>
+            }
+        </div>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state" style="margin: var(--space-8);">
+                <div class="empty-state-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                <div class="empty-state-title">Aucun stock</div>
+                <div class="empty-state-message">Aucun stock ne correspond aux critères sélectionnés.</div>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Boutique</th>
+                            <th>Dépôt</th>
+                            <th class="text-end">Quantité</th>
+                            <th class="text-end">Seuil</th>
+                            <th style="width: 140px;">Statut</th>
+                            <th style="width: 100px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stock in Model)
+                        {
+                            var seuil = stock.ProduitBoutique.SeuilStockBas;
+                            var isBas = seuil > 0 && stock.Quantite <= seuil;
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600; font-size: 14px;">@stock.ProduitBoutique.Produit.Nom</div>
+                                    <div class="text-muted" style="font-size: 12px;">
+                                        @if (!string.IsNullOrEmpty(stock.ProduitBoutique.Sku))
+                                        {
+                                            <code>@stock.ProduitBoutique.Sku</code>
+                                        }
+                                        @if (!string.IsNullOrEmpty(stock.ProduitBoutique.Sku) && !string.IsNullOrEmpty(stock.ProduitBoutique.CodeBarres))
+                                        {
+                                            <span> · </span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(stock.ProduitBoutique.CodeBarres))
+                                        {
+                                            <code>@stock.ProduitBoutique.CodeBarres</code>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-secondary">@stock.Depot.Boutique.Nom</span>
+                                </td>
+                                <td>
+                                    <span style="font-size: 13px;">📦 @stock.Depot.Nom</span>
+                                </td>
+                                <td class="text-end">
+                                    <strong style="font-size: 16px; @(isBas ? "color: var(--color-danger);" : "")">@stock.Quantite</strong>
+                                </td>
+                                <td class="text-end text-muted">@seuil</td>
+                                <td>
+                                    @if (isBas)
+                                    {
+                                        <span class="badge badge-warning">
+                                            <span class="status-indicator status-indicator--warning"></span>
+                                            Stock bas
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-success">
+                                            <span class="status-indicator status-indicator--success"></span>
+                                            OK
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Actions">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" asp-action="Details" asp-route-id="@stock.Id" title="Détails">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            </a></li>
+                                            @if (User.IsInRole("AdminReseau") || User.IsInRole("ManagerBoutique") || User.IsInRole("GestionnaireStock"))
+                                            {
+                                                <li><a class="dropdown-item" asp-action="Ajustement" asp-route-stockId="@stock.Id" title="Ajuster">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                                                </a></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

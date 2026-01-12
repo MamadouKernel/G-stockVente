@@ -1,0 +1,97 @@
+@model G_StockVente.Domain.Models.JournalConnexion
+@{
+    ViewData["Title"] = "Détails de la connexion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Détails de la connexion</h1>
+        <p class="page-subtitle">@Model.Email · @Model.DateTentative.ToString("dd/MM/yyyy HH:mm:ss")</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Informations de connexion</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Date et heure</dt>
+                    <dd class="col-sm-7">@Model.DateTentative.ToString("dd/MM/yyyy à HH:mm:ss") UTC</dd>
+
+                    <dt class="col-sm-5">Email</dt>
+                    <dd class="col-sm-7"><strong>@Model.Email</strong></dd>
+
+                    <dt class="col-sm-5">Adresse IP</dt>
+                    <dd class="col-sm-7">
+                        <code>@(Model.AdresseIP ?? "Non disponible")</code>
+                    </dd>
+
+                    <dt class="col-sm-5">Statut</dt>
+                    <dd class="col-sm-7">
+                        @if (Model.Succes)
+                        {
+                            <span class="badge bg-success">✓ Connexion réussie</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">✗ Échec de connexion</span>
+                        }
+                    </dd>
+
+                    @if (!string.IsNullOrEmpty(Model.RaisonEchec))
+                    {
+                        <dt class="col-sm-12 mt-3">Raison de l'échec</dt>
+                        <dd class="col-sm-12">
+                            <div class="alert alert-danger mb-0">@Model.RaisonEchec</div>
+                        </dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Utilisateur != null)
+    {
+        <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Utilisateur</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="mb-0">
+                        <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Nom complet</dt>
+                        <dd style="margin-bottom: 16px;">
+                            <strong>@Model.Utilisateur.Prenom @Model.Utilisateur.Nom</strong>
+                        </dd>
+
+                        <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Email</dt>
+                        <dd style="margin-bottom: 16px;">@Model.Utilisateur.Email</dd>
+
+                        <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Dernière connexion</dt>
+                        <dd>
+                            @if (Model.Utilisateur.DateDerniereConnexion.HasValue)
+                            {
+                                @Model.Utilisateur.DateDerniereConnexion.Value.ToString("dd/MM/yyyy HH:mm")
+                            }
+                            else
+                            {
+                                <span class="text-muted">Jamais</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

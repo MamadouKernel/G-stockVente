@@ -1,0 +1,148 @@
+@model G_StockVente.Domain.Models.PaiementIntegre
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Détails du paiement";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Paiement intégré</h1>
+        <p class="page-subtitle">Détails du paiement @Model.ReferenceExterne</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Informations du paiement</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Type</dt>
+                    <dd class="col-sm-7">
+                        @if (Model.Type == TypePaiementIntegre.MobileMoney)
+                        {
+                            <span class="badge bg-info">📱 Mobile Money</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-primary">💳 Carte bancaire</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-5">Statut</dt>
+                    <dd class="col-sm-7">
+                        @{
+                            var statutClass = Model.Statut switch
+                            {
+                                StatutPaiement.EnAttente => "badge-warning",
+                                StatutPaiement.Valide => "badge-success",
+                                StatutPaiement.Echec => "badge-danger",
+                                StatutPaiement.Rembourse => "badge-secondary",
+                                _ => "badge-secondary"
+                            };
+                        }
+                        <span class="badge @statutClass">@Model.Statut</span>
+                    </dd>
+
+                    <dt class="col-sm-5">Montant</dt>
+                    <dd class="col-sm-7">
+                        <strong style="font-size: 18px; color: var(--color-primary);">
+                            @Model.Montant.ToString("N2", new System.Globalization.CultureInfo("fr-FR")) €
+                        </strong>
+                    </dd>
+
+                    <dt class="col-sm-5">Référence externe</dt>
+                    <dd class="col-sm-7">
+                        <code>@(Model.ReferenceExterne ?? "—")</code>
+                    </dd>
+
+                    <dt class="col-sm-5">Date de création</dt>
+                    <dd class="col-sm-7">@Model.DateCreation.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                    @if (Model.DateValidation.HasValue)
+                    {
+                        <dt class="col-sm-5">Date de validation</dt>
+                        <dd class="col-sm-7">@Model.DateValidation.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.MessageErreur))
+                    {
+                        <dt class="col-sm-12 mt-3">Message d'erreur</dt>
+                        <dd class="col-sm-12">
+                            <div class="alert alert-danger mb-0">@Model.MessageErreur</div>
+                        </dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Vente associée</h5>
+            </div>
+            <div class="card-body">
+                <dl class="mb-0">
+                    <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Numéro de vente</dt>
+                    <dd style="margin-bottom: 16px;">
+                        <a asp-controller="Ventes" asp-action="Details" asp-route-id="@Model.VenteId" class="text-decoration-none">
+                            <strong>@Model.Vente.NumeroVente</strong>
+                        </a>
+                    </dd>
+
+                    <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Boutique</dt>
+                    <dd style="margin-bottom: 16px;">@(Model.Vente.Boutique?.Nom ?? "N/A")</dd>
+
+                    <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Montant de la vente</dt>
+                    <dd style="margin-bottom: 16px;">
+                        <strong>@Model.Vente.MontantTTC.ToString("N2", new System.Globalization.CultureInfo("fr-FR")) € TTC</strong>
+                    </dd>
+
+                    <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Date de vente</dt>
+                    <dd>@Model.Vente.DateVente.ToString("dd/MM/yyyy HH:mm")</dd>
+                </dl>
+            </div>
+        </div>
+
+        @if (Model.Statut == StatutPaiement.Valide && (User.IsInRole("AdminReseau") || User.IsInRole("ManagerBoutique")))
+        {
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 style="font-weight: 600; margin-bottom: var(--space-3);">Actions</h6>
+                    <form asp-action="Rembourser" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir rembourser ce paiement ? Cette action est irréversible.');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning w-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            Rembourser le paiement
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.DonneesReponse))
+    {
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Données de réponse (JSON)</h5>
+                </div>
+                <div class="card-body">
+                    <pre style="background: var(--color-bg-subtle); padding: var(--space-4); border-radius: var(--radius-md); font-size: 12px; overflow-x: auto;">@Model.DonneesReponse</pre>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

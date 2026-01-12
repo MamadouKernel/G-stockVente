@@ -1,0 +1,138 @@
+@model G_StockVente.Controllers.CreateDelegationViewModel
+@{
+    ViewData["Title"] = "Nouvelle délégation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3481c0 0%, #2563eb 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(52, 129, 192, 0.3);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div>
+                <h1 class="page-title" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1.2;">Nouvelle délégation</h1>
+                <p class="page-subtitle" style="margin: 4px 0 0; color: #667085; font-size: 14px;">Création d'une nouvelle délégation temporaire de droits</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row form-page-container">
+    <div class="col-12 col-lg-10">
+        <div class="card surface" style="border-left: 4px solid #3481c0;">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.05) 0%, rgba(219, 180, 56, 0.03) 100%); border-bottom: 1px solid rgba(52, 129, 192, 0.15);">
+                <div style="font-weight: 600; color: #3481c0; font-size: 16px;">Informations de la délégation</div>
+                <small class="text-muted" style="font-size: 13px;">Détails de la délégation temporaire</small>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" novalidate id="createForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" style="border-left: 4px solid #ef4444; border-radius: 12px;"></div>
+
+                    <div class="row g-4">
+                        <div class="col-12 col-md-6">
+                            <label asp-for="UtilisateurDelegantId" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                                Utilisateur délégant <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="UtilisateurDelegantId" class="form-select" required>
+                                <option value="">Sélectionner un utilisateur...</option>
+                                @foreach (var item in ViewBag.Utilisateurs as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="UtilisateurDelegantId" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="UtilisateurBeneficiaireId" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                Utilisateur bénéficiaire <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="UtilisateurBeneficiaireId" class="form-select" required>
+                                <option value="">Sélectionner un utilisateur...</option>
+                                @foreach (var item in ViewBag.Utilisateurs as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="UtilisateurBeneficiaireId" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="RoleDelege" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                Rôle délégué <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="RoleDelege" class="form-select" required>
+                                <option value="">Sélectionner un rôle...</option>
+                                @foreach (var item in ViewBag.Roles as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="RoleDelege" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="DateDebut" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                Date de début <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="DateDebut" type="date" class="form-control" required />
+                            <span asp-validation-for="DateDebut" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label asp-for="DateFin" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                Date de fin <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="DateFin" type="date" class="form-control" required />
+                            <span asp-validation-for="DateFin" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Raison" class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                Raison (optionnel)
+                            </label>
+                            <textarea asp-for="Raison" class="form-control" rows="3" placeholder="Raison de la délégation..." maxlength="500"></textarea>
+                            <span asp-validation-for="Raison" class="form-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 d-flex gap-2 justify-content-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-primary" id="submitButton">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Créer la délégation
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('createForm')?.addEventListener('submit', function(e) {
+            const button = document.getElementById('submitButton');
+            if (button && !button.disabled) {
+                LoadingState.show(button);
+            }
+        });
+    </script>
+}
+

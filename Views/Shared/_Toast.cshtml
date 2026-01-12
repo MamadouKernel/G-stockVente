@@ -1,0 +1,42 @@
+@*
+    Toast Notification Component
+    Usage: Will be automatically rendered by app.js
+    Manual usage: @await Html.PartialAsync("_Toast", new { Message = "Success!", Type = "success" })
+*@
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Toast.success('@Html.Raw(TempData["SuccessMessage"])');
+        });
+    </script>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Toast.error('@Html.Raw(TempData["ErrorMessage"])');
+        });
+    </script>
+}
+
+@if (TempData["WarningMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Toast.warning('@Html.Raw(TempData["WarningMessage"])');
+        });
+    </script>
+}
+
+@if (TempData["InfoMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Toast.info('@Html.Raw(TempData["InfoMessage"])');
+        });
+    </script>
+}
+

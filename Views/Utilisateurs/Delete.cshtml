@@ -1,0 +1,64 @@
+@model G_StockVente.Controllers.UtilisateurViewModel
+@{
+    ViewData["Title"] = "Supprimer un utilisateur";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title" style="font-size:22px;">Supprimer un utilisateur</h2>
+        <p class="page-subtitle">Cette action applique un soft delete.</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-primary">Retour</a>
+    </div>
+</div>
+
+<div class="surface padded">
+    <div class="alert alert-warning mb-3">
+        L'utilisateur sera marqué comme supprimé et ne pourra plus se connecter, mais ses données seront conservées en base et restaurables.
+    </div>
+
+    <div class="card border-0 shadow-none">
+        <div class="card-header">Récapitulatif</div>
+        <div class="card-body px-0">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Nom complet</dt>
+                <dd class="col-sm-9"><strong>@Model.Prenom @Model.Nom</strong></dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Rôles</dt>
+                <dd class="col-sm-9">
+                    @foreach (var role in Model.Roles)
+                    {
+                        <span class="badge text-bg-light border me-1">@role</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Boutique active</dt>
+                <dd class="col-sm-9">@(Model.BoutiqueActiveNom ?? "-")</dd>
+
+                <dt class="col-sm-3">Statut</dt>
+                <dd class="col-sm-9">
+                    @if (Model.EstActif)
+                    {
+                        <span class="badge text-bg-success">Actif</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">Inactif</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="Delete" method="post" class="mt-4 d-flex gap-2">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Confirmer</button>
+        <a asp-action="Index" class="btn btn-outline-primary">Annuler</a>
+    </form>
+</div>
+

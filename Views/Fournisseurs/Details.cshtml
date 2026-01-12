@@ -1,0 +1,375 @@
+@model G_StockVente.Domain.Models.Fournisseur
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Détails du fournisseur";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    var totalAchats = ViewBag.TotalAchats as int? ?? 0;
+    var montantTotalHT = (decimal)(ViewBag.MontantTotalHT ?? 0m);
+    var montantTotalTTC = (decimal)(ViewBag.MontantTotalTTC ?? 0m);
+    var premierAchat = ViewBag.PremierAchat as G_StockVente.Domain.Models.Achat;
+    var dernierAchat = ViewBag.DernierAchat as G_StockVente.Domain.Models.Achat;
+    var achatsEnAttente = ViewBag.AchatsEnAttente as int? ?? 0;
+    var achatsReceptionnes = ViewBag.AchatsReceptionnes as int? ?? 0;
+    var achatsAnnules = ViewBag.AchatsAnnules as int? ?? 0;
+    var achatsRecents = ViewBag.AchatsRecents as List<G_StockVente.Domain.Models.Achat> ?? new List<G_StockVente.Domain.Models.Achat>();
+    var achatsParMois = ViewBag.AchatsParMois as dynamic ?? new List<object>();
+    
+    var achats = Model.Achats?.OrderByDescending(a => a.DateCommande).ToList() ?? new List<G_StockVente.Domain.Models.Achat>();
+}
+
+<div class="page-header">
+    <div>
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm" style="border-radius: 8px; padding: 8px 12px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+            </a>
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3481c0 0%, #2563eb 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(52, 129, 192, 0.3);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div>
+                <h2 class="page-title" style="font-size: 28px; font-weight: 800; margin: 0; line-height: 1.2;">@Model.Nom</h2>
+                <p class="page-subtitle" style="margin: 4px 0 0; color: #667085; font-size: 14px;">Détails et traçabilité complète</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            Modifier
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Informations générales -->
+    <div class="col-12 col-lg-4">
+        <div class="card surface" style="border-left: 4px solid #3481c0;">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.05) 0%, rgba(52, 129, 192, 0.02) 100%); border-bottom: 1px solid rgba(52, 129, 192, 0.15);">
+                <h3 class="card-title mb-0 d-flex align-items-center gap-2" style="color: #3481c0; font-weight: 600; font-size: 16px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Informations générales
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <label class="form-label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Nom du fournisseur</label>
+                    <div style="color: #101828; font-size: 16px; font-weight: 600;">@Model.Nom</div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Adresse))
+                {
+                    <div class="mb-4">
+                        <label class="form-label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Adresse</label>
+                        <div style="color: #101828; font-size: 14px; line-height: 1.6;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            @Model.Adresse
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Telephone))
+                {
+                    <div class="mb-4">
+                        <label class="form-label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Téléphone</label>
+                        <div style="color: #101828; font-size: 14px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                            <a href="tel:@Model.Telephone" style="color: #3481c0; text-decoration: none;">@Model.Telephone</a>
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Email))
+                {
+                    <div class="mb-4">
+                        <label class="form-label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Email</label>
+                        <div style="color: #101828; font-size: 14px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            <a href="mailto:@Model.Email" style="color: #3481c0; text-decoration: none;">@Model.Email</a>
+                        </div>
+                    </div>
+                }
+
+                <div class="mb-4">
+                    <label class="form-label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Statut</label>
+                    <div>
+                        @if (Model.EstActif)
+                        {
+                            <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%); color: #059669; font-size: 12px; font-weight: 600; padding: 6px 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Actif
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge rounded-pill" style="background: rgba(102, 112, 133, 0.1); color: #667085; font-size: 12px; font-weight: 600; padding: 6px 12px; border: 1px solid rgba(102, 112, 133, 0.2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                Inactif
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="mb-4">
+                        <label class="form-label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Notes</label>
+                        <div style="color: #101828; font-size: 14px; line-height: 1.6; padding: 12px; background: rgba(102, 112, 133, 0.05); border-radius: 8px; border: 1px solid rgba(102, 112, 133, 0.1);">@Model.Notes</div>
+                    </div>
+                }
+
+                <div class="mb-0" style="padding-top: 16px; border-top: 1px solid rgba(102, 112, 133, 0.1);">
+                    <label class="form-label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Traçabilité</label>
+                    <div style="color: #101828; font-size: 13px; line-height: 1.8;">
+                        <div class="mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <strong>Créé le :</strong> @Model.DateCreation.ToString("dd/MM/yyyy à HH:mm")
+                        </div>
+                        @if (Model.DateModification.HasValue)
+                        {
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                <strong>Modifié le :</strong> @Model.DateModification.Value.ToString("dd/MM/yyyy à HH:mm")
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques et historique -->
+    <div class="col-12 col-lg-8">
+        <!-- Statistiques -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card surface kpi" style="border-left: 4px solid #3481c0;">
+                    <div class="card-body p-3">
+                        <div class="kpi__label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Total achats</div>
+                        <div class="kpi__value" style="color: #3481c0; font-size: 24px; font-weight: 700; line-height: 1;">@totalAchats</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card surface kpi" style="border-left: 4px solid #10b981;">
+                    <div class="card-body p-3">
+                        <div class="kpi__label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Montant total HT</div>
+                        <div class="kpi__value" style="color: #10b981; font-size: 20px; font-weight: 700; line-height: 1;">@montantTotalHT.ToString("N0")</div>
+                        <div style="color: #667085; font-size: 11px; margin-top: 4px;">FCFA</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card surface kpi" style="border-left: 4px solid #dbb438;">
+                    <div class="card-body p-3">
+                        <div class="kpi__label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Montant total TTC</div>
+                        <div class="kpi__value" style="color: #dbb438; font-size: 20px; font-weight: 700; line-height: 1;">@montantTotalTTC.ToString("N0")</div>
+                        <div style="color: #667085; font-size: 11px; margin-top: 4px;">FCFA</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card surface kpi" style="border-left: 4px solid #8b5cf6;">
+                    <div class="card-body p-3">
+                        <div class="kpi__label" style="color: #667085; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Réceptionnés</div>
+                        <div class="kpi__value" style="color: #8b5cf6; font-size: 24px; font-weight: 700; line-height: 1;">@achatsReceptionnes</div>
+                        <div style="color: #667085; font-size: 11px; margin-top: 4px;">sur @totalAchats</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Répartition par statut -->
+        <div class="card surface mb-4" style="border-left: 4px solid #10b981;">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%); border-bottom: 1px solid rgba(16, 185, 129, 0.15);">
+                <h3 class="card-title mb-0 d-flex align-items-center gap-2" style="color: #10b981; font-weight: 600; font-size: 16px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Répartition des achats par statut
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <div class="p-3 rounded" style="background: rgba(52, 129, 192, 0.05); border: 1px solid rgba(52, 129, 192, 0.15);">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span style="color: #667085; font-size: 13px; font-weight: 600;">En attente</span>
+                                <span class="badge rounded-pill" style="background: rgba(52, 129, 192, 0.15); color: #3481c0; font-size: 12px; font-weight: 700; padding: 4px 10px;">@achatsEnAttente</span>
+                            </div>
+                            @if (totalAchats > 0)
+                            {
+                                <div class="progress" style="height: 8px; border-radius: 4px; background: rgba(52, 129, 192, 0.1);">
+                                    <div class="progress-bar" role="progressbar" style="width: @((achatsEnAttente * 100.0 / totalAchats).ToString("F1"))%; background: #3481c0; border-radius: 4px;" aria-valuenow="@achatsEnAttente" aria-valuemin="0" aria-valuemax="@totalAchats"></div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="p-3 rounded" style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15);">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span style="color: #667085; font-size: 13px; font-weight: 600;">Réceptionnés</span>
+                                <span class="badge rounded-pill" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-size: 12px; font-weight: 700; padding: 4px 10px;">@achatsReceptionnes</span>
+                            </div>
+                            @if (totalAchats > 0)
+                            {
+                                <div class="progress" style="height: 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.1);">
+                                    <div class="progress-bar" role="progressbar" style="width: @((achatsReceptionnes * 100.0 / totalAchats).ToString("F1"))%; background: #10b981; border-radius: 4px;" aria-valuenow="@achatsReceptionnes" aria-valuemin="0" aria-valuemax="@totalAchats"></div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="p-3 rounded" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15);">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span style="color: #667085; font-size: 13px; font-weight: 600;">Annulés</span>
+                                <span class="badge rounded-pill" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-size: 12px; font-weight: 700; padding: 4px 10px;">@achatsAnnules</span>
+                            </div>
+                            @if (totalAchats > 0)
+                            {
+                                <div class="progress" style="height: 8px; border-radius: 4px; background: rgba(239, 68, 68, 0.1);">
+                                    <div class="progress-bar" role="progressbar" style="width: @((achatsAnnules * 100.0 / totalAchats).ToString("F1"))%; background: #ef4444; border-radius: 4px;" aria-valuenow="@achatsAnnules" aria-valuemin="0" aria-valuemax="@totalAchats"></div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                @if (premierAchat != null || dernierAchat != null)
+                {
+                    <div class="mt-4 pt-3" style="border-top: 1px solid rgba(102, 112, 133, 0.1);">
+                        <div class="row g-3">
+                            @if (premierAchat != null)
+                            {
+                                <div class="col-12 col-md-6">
+                                    <div style="color: #667085; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Premier achat</div>
+                                    <div style="color: #101828; font-size: 14px; font-weight: 600;">
+                                        <a asp-controller="Achats" asp-action="Details" asp-route-id="@premierAchat.Id" style="color: #3481c0; text-decoration: none;">@premierAchat.NumeroAchat</a>
+                                        <span style="color: #667085; font-weight: 400; font-size: 13px;"> - @premierAchat.DateCommande.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                </div>
+                            }
+                            @if (dernierAchat != null)
+                            {
+                                <div class="col-12 col-md-6">
+                                    <div style="color: #667085; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Dernier achat</div>
+                                    <div style="color: #101828; font-size: 14px; font-weight: 600;">
+                                        <a asp-controller="Achats" asp-action="Details" asp-route-id="@dernierAchat.Id" style="color: #3481c0; text-decoration: none;">@dernierAchat.NumeroAchat</a>
+                                        <span style="color: #667085; font-weight: 400; font-size: 13px;"> - @dernierAchat.DateCommande.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Historique complet des achats -->
+        <div class="card surface" style="border-left: 4px solid #dbb438;">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(219, 180, 56, 0.05) 0%, rgba(219, 180, 56, 0.02) 100%); border-bottom: 1px solid rgba(219, 180, 56, 0.15);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h3 class="card-title mb-0 d-flex align-items-center gap-2" style="color: #dbb438; font-weight: 600; font-size: 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dbb438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        Historique complet des achats
+                    </h3>
+                    <span class="badge rounded-pill" style="background: rgba(219, 180, 56, 0.15); color: #dbb438; font-size: 12px; font-weight: 600; padding: 4px 12px;">
+                        @totalAchats achat(s)
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                @if (achats.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #667085; font-weight: 600;">Numéro</th>
+                                    <th style="padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #667085; font-weight: 600;">Date</th>
+                                    <th style="padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #667085; font-weight: 600;">Boutique</th>
+                                    <th style="padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #667085; font-weight: 600;">Montant HT</th>
+                                    <th style="padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #667085; font-weight: 600;">Montant TTC</th>
+                                    <th style="padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #667085; font-weight: 600; text-align: center;">Statut</th>
+                                    <th style="width: 80px; padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #667085; font-weight: 600; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var achat in achats)
+                                {
+                                    <tr style="transition: all 0.2s ease;">
+                                        <td style="padding: 16px; vertical-align: middle;">
+                                            <strong style="color: #101828; font-size: 14px; font-weight: 600;">@achat.NumeroAchat</strong>
+                                            @if (!string.IsNullOrEmpty(achat.NumeroFactureFournisseur))
+                                            {
+                                                <br />
+                                                <small style="color: #667085; font-size: 12px;">Facture : @achat.NumeroFactureFournisseur</small>
+                                            }
+                                        </td>
+                                        <td style="padding: 16px; vertical-align: middle;">
+                                            <div style="color: #101828; font-size: 14px;">@achat.DateCommande.ToString("dd/MM/yyyy")</div>
+                                            <small style="color: #667085; font-size: 12px;">@achat.DateCommande.ToString("HH:mm")</small>
+                                        </td>
+                                        <td style="padding: 16px; vertical-align: middle;">
+                                            <span style="color: #101828; font-size: 14px;">@achat.Boutique?.Nom</span>
+                                        </td>
+                                        <td style="padding: 16px; vertical-align: middle;">
+                                            <span style="color: #101828; font-size: 14px; font-weight: 600;">@achat.MontantHT.ToString("N0")</span>
+                                            <span style="color: #667085; font-size: 12px;"> FCFA</span>
+                                        </td>
+                                        <td style="padding: 16px; vertical-align: middle;">
+                                            <span style="color: #101828; font-size: 14px; font-weight: 600;">@achat.MontantTTC.ToString("N0")</span>
+                                            <span style="color: #667085; font-size: 12px;"> FCFA</span>
+                                        </td>
+                                        <td style="padding: 16px; vertical-align: middle; text-align: center;">
+                                            @switch (achat.Statut)
+                                            {
+                                                case StatutAchat.EnAttente:
+                                                    <span class="badge rounded-pill" style="background: rgba(52, 129, 192, 0.15); color: #3481c0; font-size: 11px; font-weight: 600; padding: 6px 12px;">En attente</span>
+                                                    break;
+                                                case StatutAchat.EnReception:
+                                                    <span class="badge rounded-pill" style="background: rgba(219, 180, 56, 0.15); color: #dbb438; font-size: 11px; font-weight: 600; padding: 6px 12px;">En réception</span>
+                                                    break;
+                                                case StatutAchat.Receptionne:
+                                                    <span class="badge rounded-pill" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-size: 11px; font-weight: 600; padding: 6px 12px;">Réceptionné</span>
+                                                    break;
+                                                case StatutAchat.Annule:
+                                                    <span class="badge rounded-pill" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-size: 11px; font-weight: 600; padding: 6px 12px;">Annulé</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td style="padding: 16px; vertical-align: middle; text-align: center;">
+                                            <a asp-controller="Achats" asp-action="Details" asp-route-id="@achat.Id" class="btn btn-sm btn-outline-primary" style="border-radius: 8px; padding: 6px 12px; font-weight: 600;" title="Voir détails">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state" style="min-height: 200px; padding: 40px 20px;">
+                        <div class="empty-state-icon" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(219, 180, 56, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 2px dashed rgba(219, 180, 56, 0.3);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#dbb438" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        </div>
+                        <h5 class="empty-state-title">Aucun achat enregistré</h5>
+                        <p class="empty-state-message">Ce fournisseur n'a pas encore d'achat dans le système.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Focus automatique sur les liens de retour
+        document.querySelectorAll('a[asp-action="Index"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Navigation normale
+            });
+        });
+    </script>
+}
+

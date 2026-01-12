@@ -1,0 +1,166 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    // Fonction pour déterminer si un lien est actif
+    string Active(string controller, string? action = null)
+    {
+        if (!string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase)) return "";
+        if (action != null && !string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase)) return "";
+        return "active";
+    }
+
+    // Fonction pour vérifier si un groupe est actif (n'importe quelle action du controller)
+    string GroupActive(string controller)
+    {
+        if (string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase)) return "active";
+        return "";
+    }
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <!-- Desktop sidebar -->
+    <aside class="app-sidebar d-none d-md-flex" aria-label="Navigation principale">
+        <div class="sidebar-brand">
+            <a asp-controller="Home" asp-action="Index" class="sidebar-brand__link">
+                <span class="sidebar-brand__mark">GSV</span>
+                <span class="sidebar-brand__text">G-StockVente</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a class="sidebar-link @GroupActive("Dashboard")" asp-controller="Dashboard" asp-action="Index">
+                <span class="sidebar-ico" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </span>
+                Tableau de bord
+            </a>
+
+            <a class="sidebar-link @Active("Ventes","Caisse")" asp-controller="Ventes" asp-action="Caisse">
+                <span class="sidebar-ico" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+                </span>
+                Caisse
+            </a>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group__title">Catalogue</div>
+                <a class="sidebar-link sidebar-link--sub @GroupActive("Produits")" asp-controller="Produits" asp-action="Index">Produits</a>
+                <a class="sidebar-link sidebar-link--sub @GroupActive("Categories")" asp-controller="Categories" asp-action="Index">Catégories</a>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group__title">Stock</div>
+                <a class="sidebar-link sidebar-link--sub @Active("Stocks","Index")" asp-controller="Stocks" asp-action="Index">Stocks</a>
+                <a class="sidebar-link sidebar-link--sub @Active("Stocks","Mouvements")" asp-controller="Stocks" asp-action="Mouvements">Mouvements</a>
+                <a class="sidebar-link sidebar-link--sub @GroupActive("Transferts")" asp-controller="Transferts" asp-action="Index">Transferts</a>
+                <a class="sidebar-link sidebar-link--sub @GroupActive("Inventaires")" asp-controller="Inventaires" asp-action="Index">Inventaires</a>
+                <a class="sidebar-link sidebar-link--sub @GroupActive("Depots")" asp-controller="Depots" asp-action="Index">Dépôts</a>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group__title">Achats</div>
+                <a class="sidebar-link sidebar-link--sub @GroupActive("Fournisseurs")" asp-controller="Fournisseurs" asp-action="Index">Fournisseurs</a>
+                <a class="sidebar-link sidebar-link--sub @GroupActive("Achats")" asp-controller="Achats" asp-action="Index">Commandes</a>
+            </div>
+
+            @if (User.IsInRole("AdminReseau") || User.IsInRole("ManagerBoutique"))
+            {
+                <div class="sidebar-group">
+                    <div class="sidebar-group__title">Finances</div>
+                    <a class="sidebar-link sidebar-link--sub @GroupActive("PaiementsIntegres")" asp-controller="PaiementsIntegres" asp-action="Index">Paiements intégrés</a>
+                </div>
+            }
+
+            <a class="sidebar-link @Active("Ventes","Index") @Active("Ventes","Details")" asp-controller="Ventes" asp-action="Index">
+                <span class="sidebar-ico" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </span>
+                Ventes
+            </a>
+
+            <div class="sidebar-group">
+                <div class="sidebar-group__title">Rapports</div>
+                <a class="sidebar-link sidebar-link--sub @Active("Rapports","Index") @Active("Rapports","Ventes")" asp-controller="Rapports" asp-action="Ventes">Ventes</a>
+                <a class="sidebar-link sidebar-link--sub @Active("Rapports","Stocks")" asp-controller="Rapports" asp-action="Stocks">Stocks</a>
+                <a class="sidebar-link sidebar-link--sub @Active("Rapports","Achats")" asp-controller="Rapports" asp-action="Achats">Achats</a>
+                <a class="sidebar-link sidebar-link--sub @GroupActive("RapportsProgrammes")" asp-controller="RapportsProgrammes" asp-action="Index">Rapports programmés</a>
+            </div>
+
+            @if (User.IsInRole("AdminReseau") || User.IsInRole("ManagerBoutique"))
+            {
+                <a class="sidebar-link @GroupActive("Boutiques")" asp-controller="Boutiques" asp-action="Index">
+                    <span class="sidebar-ico" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </span>
+                    Boutiques
+                </a>
+            }
+            @if (User.IsInRole("AdminReseau") || User.IsInRole("ManagerBoutique"))
+            {
+                <div class="sidebar-group">
+                    <div class="sidebar-group__title">Administration</div>
+                    <a class="sidebar-link sidebar-link--sub @GroupActive("Utilisateurs")" asp-controller="Utilisateurs" asp-action="Index">Utilisateurs</a>
+                    @if (User.IsInRole("AdminReseau"))
+                    {
+                        <a class="sidebar-link sidebar-link--sub @GroupActive("JournalConnexions")" asp-controller="JournalConnexions" asp-action="Index">Journal connexions</a>
+                    }
+                </div>
+            }
+
+            <a class="sidebar-link @GroupActive("Notifications")" asp-controller="Notifications" asp-action="Index">
+                <span class="sidebar-ico" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                </span>
+                Notifications
+            </a>
+
+            <a class="sidebar-link @GroupActive("Aide")" asp-controller="Aide" asp-action="Index">
+                <span class="sidebar-ico" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </span>
+                Aide
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a class="sidebar-link sidebar-link--muted" asp-controller="Boutiques" asp-action="SelectionBoutique">Changer de boutique</a>
+        </div>
+    </aside>
+
+    <!-- Mobile offcanvas -->
+    <div class="offcanvas offcanvas-start app-offcanvas d-md-none" tabindex="-1" id="appSidebar" aria-labelledby="appSidebarLabel">
+        <div class="offcanvas-header">
+            <div class="offcanvas-title" id="appSidebarLabel">
+                <strong>G-StockVente</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fermer"></button>
+        </div>
+        <div class="offcanvas-body">
+            <nav class="sidebar-nav">
+                <a class="sidebar-link @GroupActive("Dashboard")" asp-controller="Dashboard" asp-action="Index" data-bs-dismiss="offcanvas">Tableau de bord</a>
+                <a class="sidebar-link @Active("Ventes","Caisse")" asp-controller="Ventes" asp-action="Caisse" data-bs-dismiss="offcanvas">Caisse</a>
+                <a class="sidebar-link @GroupActive("Produits")" asp-controller="Produits" asp-action="Index" data-bs-dismiss="offcanvas">Produits</a>
+                <a class="sidebar-link @GroupActive("Stocks")" asp-controller="Stocks" asp-action="Index" data-bs-dismiss="offcanvas">Stocks</a>
+                <a class="sidebar-link @GroupActive("Transferts")" asp-controller="Transferts" asp-action="Index" data-bs-dismiss="offcanvas">Transferts</a>
+                <a class="sidebar-link @GroupActive("Inventaires")" asp-controller="Inventaires" asp-action="Index" data-bs-dismiss="offcanvas">Inventaires</a>
+                <a class="sidebar-link @GroupActive("Achats")" asp-controller="Achats" asp-action="Index" data-bs-dismiss="offcanvas">Achats</a>
+                <a class="sidebar-link @GroupActive("Rapports")" asp-controller="Rapports" asp-action="Index" data-bs-dismiss="offcanvas">Rapports</a>
+                @if (User.IsInRole("AdminReseau") || User.IsInRole("ManagerBoutique"))
+                {
+                    <a class="sidebar-link @GroupActive("Boutiques")" asp-controller="Boutiques" asp-action="Index" data-bs-dismiss="offcanvas">Boutiques</a>
+                }
+                @if (User.IsInRole("AdminReseau") || User.IsInRole("ManagerBoutique"))
+                {
+                    <a class="sidebar-link @GroupActive("Utilisateurs")" asp-controller="Utilisateurs" asp-action="Index" data-bs-dismiss="offcanvas">Utilisateurs</a>
+                }
+                <a class="sidebar-link @GroupActive("Aide")" asp-controller="Aide" asp-action="Index" data-bs-dismiss="offcanvas">Aide</a>
+                <hr />
+                <a class="sidebar-link sidebar-link--muted" asp-controller="Boutiques" asp-action="SelectionBoutique" data-bs-dismiss="offcanvas">Changer de boutique</a>
+            </nav>
+        </div>
+    </div>
+}
+
+

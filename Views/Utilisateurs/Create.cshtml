@@ -1,0 +1,266 @@
+@model G_StockVente.Controllers.CreateUtilisateurViewModel
+@{
+    ViewData["Title"] = "Créer un utilisateur";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Créer un utilisateur</h1>
+        <p class="page-subtitle">Définissez l'accès, les rôles et la boutique active</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row form-page-container">
+    <div class="col-12 col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <div style="font-weight: 600;">Informations personnelles</div>
+                <small class="text-muted">Nom, prénom et coordonnées</small>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" novalidate id="createForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label asp-for="Prenom" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                Prénom <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Prenom" 
+                                   class="form-control" 
+                                   style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                   placeholder="Prénom"
+                                   autofocus
+                                   required />
+                            <span asp-validation-for="Prenom" class="form-error"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Nom" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                Nom <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Nom" 
+                                   class="form-control" 
+                                   style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                   placeholder="Nom"
+                                   required />
+                            <span asp-validation-for="Nom" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Email" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                Adresse email <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Email" 
+                                   class="form-control" 
+                                   type="email" 
+                                   style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                   placeholder="email@exemple.com"
+                                   autocomplete="username"
+                                   required />
+                            <span asp-validation-for="Email" class="form-error"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Password" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                Mot de passe <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Password" 
+                                   class="form-control" 
+                                   type="password" 
+                                   style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                   placeholder="••••••••"
+                                   autocomplete="new-password"
+                                   required />
+                            <span asp-validation-for="Password" class="form-error"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ConfirmPassword" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                Confirmer le mot de passe <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="ConfirmPassword" 
+                                   class="form-control" 
+                                   type="password" 
+                                   style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                   placeholder="••••••••"
+                                   autocomplete="new-password"
+                                   required />
+                            <span asp-validation-for="ConfirmPassword" class="form-error"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <div style="font-weight: 600;">Accès et permissions</div>
+                <small class="text-muted">Boutique active, rôles et statut</small>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label asp-for="BoutiqueId" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            Boutique active
+                        </label>
+                        @if (ViewBag.IsManagerBoutique == true)
+                        {
+                            <input type="hidden" asp-for="BoutiqueId" />
+                            <select class="form-select" 
+                                    style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px; background-color: #f1f5f9;"
+                                    asp-items="ViewBag.BoutiqueId"
+                                    disabled>
+                            </select>
+                            <span asp-validation-for="BoutiqueId" class="form-error"></span>
+                            <small class="text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                Automatiquement assignée à votre boutique
+                            </small>
+                        }
+                        else
+                        {
+                            <select asp-for="BoutiqueId" 
+                                    class="form-select" 
+                                    style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                    asp-items="ViewBag.BoutiqueId">
+                                <option value="">-- Aucune boutique active --</option>
+                            </select>
+                            <span asp-validation-for="BoutiqueId" class="form-error"></span>
+                            <small class="text-muted">La boutique par défaut pour cet utilisateur</small>
+                        }
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-3);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            Rôles
+                        </label>
+                        <div class="card roles-card" style="background: #f8fafc; border: 2px solid #e2e8f0; padding: var(--space-5); border-radius: 12px;">
+                            @if (ViewBag.IsManagerBoutique == true)
+                            {
+                                <div class="alert alert-info mb-3" style="font-size: 13px; padding: var(--space-3);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                    <strong>Restriction :</strong> Vous ne pouvez assigner que les rôles <strong>Caissier</strong> et <strong>GestionnaireStock</strong>.
+                                </div>
+                            }
+                            <div class="d-flex flex-wrap gap-4" style="gap: var(--space-5);">
+                                @{
+                                    var rolesList = ViewBag.Roles as List<Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>> ?? new List<Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>>();
+                                }
+                                @for (int i = 0; i < rolesList.Count; i++)
+                                {
+                                    var role = rolesList[i];
+                                    <div class="form-check" style="margin-bottom: 0;">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               name="Roles[@i]" 
+                                               value="@role.Name" 
+                                               id="role_@role.Id" />
+                                        <label class="form-check-label" 
+                                               for="role_@role.Id" 
+                                               style="font-weight: 600; cursor: pointer; margin-left: var(--space-3); font-size: 15px; color: #1e293b;">
+                                            @role.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check" style="padding-top: var(--space-2);">
+                            <input asp-for="EstActif" 
+                                   class="form-check-input" 
+                                   type="checkbox" 
+                                   checked
+ />
+                            <label asp-for="EstActif" 
+                                   class="form-check-label" 
+                                   style="font-weight: 500; cursor: pointer; margin-left: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Compte actif
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check" style="padding-top: var(--space-2);">
+                            <input asp-for="MustChangePassword" 
+                                   class="form-check-input" 
+                                   type="checkbox" 
+ />
+                            <label asp-for="MustChangePassword" 
+                                   class="form-check-label" 
+                                   style="font-weight: 500; cursor: pointer; margin-left: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                Changer le mot de passe à la connexion
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="d-flex gap-3 justify-content-end">
+                    <a asp-action="Index" class="btn btn-outline-primary" style="height: 42px; font-weight: 600; min-width: 120px;">
+                        Annuler
+                    </a>
+                    <button type="submit" form="createForm" class="btn btn-primary" id="submitButton" style="height: 42px; font-weight: 600; min-width: 120px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: var(--space-2);"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Créer l'utilisateur
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('createForm')?.addEventListener('submit', function(e) {
+            const form = this;
+            
+            // Supprimer les anciens champs cachés de rôles s'ils existent
+            const existingHiddenRoles = form.querySelectorAll('input[type="hidden"][name="Roles"]');
+            existingHiddenRoles.forEach(function(hidden) {
+                hidden.remove();
+            });
+            
+            // Collecter les rôles sélectionnés et créer des champs cachés
+            const checkboxes = form.querySelectorAll('input[type="checkbox"][name^="Roles["]');
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    // Créer un champ caché pour chaque rôle sélectionné
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'Roles';
+                    hiddenInput.value = checkbox.value;
+                    form.appendChild(hiddenInput);
+                }
+            });
+
+            const button = document.getElementById('submitButton');
+            if (button && !button.disabled) {
+                LoadingState.show(button);
+            }
+        });
+    </script>
+}
+

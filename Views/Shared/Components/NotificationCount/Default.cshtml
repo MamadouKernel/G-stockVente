@@ -1,0 +1,16 @@
+@model int
+
+<span class="notification-count" id="notificationCountBadge" style="@(Model > 0 ? "" : "display: none;")">
+    @if (Model > 0)
+    {
+        @if (Model > 99)
+        {
+            <span>99+</span>
+        }
+        else
+        {
+            <span>@Model</span>
+        }
+    }
+</span>
+

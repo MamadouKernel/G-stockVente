@@ -1,0 +1,211 @@
+﻿@{
+    ViewData["Title"] = "Accueil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <!-- Dashboard pour utilisateurs authentifiés -->
+    <div class="page-header mb-4">
+        <div>
+            <h1 class="page-title">Bienvenue</h1>
+            <p class="page-subtitle">Accès rapide aux modules principaux</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        @if (User.IsInRole("AdminReseau"))
+        {
+            <div class="col-md-6 col-lg-3">
+                <div class="card surface h-100" style="border-left: 4px solid #3481c0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;" onclick="window.location.href='@Url.Action("Index", "Boutiques")'">
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-3">
+                            <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, rgba(52, 129, 192, 0.15) 0%, rgba(52, 129, 192, 0.08) 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 2px solid rgba(52, 129, 192, 0.2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            </div>
+                            <h5 class="card-title mb-2" style="font-size: 18px; font-weight: 700; color: #101828;">Boutiques</h5>
+                            <p class="text-muted mb-0" style="font-size: 14px; line-height: 1.5;">Paramètres et gestion du réseau</p>
+                        </div>
+                        <a asp-controller="Boutiques" asp-action="Index" class="btn btn-outline-primary mt-auto" style="font-weight: 600; border-radius: 10px; padding: 10px 20px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                            Ouvrir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        <div class="@(User.IsInRole("AdminReseau") ? "col-md-6 col-lg-3" : "col-md-6 col-lg-4")">
+            <div class="card surface h-100" style="border-left: 4px solid #dbb438; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;" onclick="window.location.href='@Url.Action("Index", "Produits")'">
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-3">
+                        <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, rgba(219, 180, 56, 0.15) 0%, rgba(219, 180, 56, 0.08) 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 2px solid rgba(219, 180, 56, 0.2);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dbb438" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        </div>
+                        <h5 class="card-title mb-2" style="font-size: 18px; font-weight: 700; color: #101828;">Produits</h5>
+                        <p class="text-muted mb-0" style="font-size: 14px; line-height: 1.5;">Catalogue, prix, code-barres, seuils</p>
+                    </div>
+                    <a asp-controller="Produits" asp-action="Index" class="btn btn-outline-primary mt-auto" style="font-weight: 600; border-radius: 10px; padding: 10px 20px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                        Ouvrir
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="@(User.IsInRole("AdminReseau") ? "col-md-6 col-lg-3" : "col-md-6 col-lg-4")">
+            <div class="card surface h-100" style="border-left: 4px solid #10b981; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-3">
+                        <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 2px solid rgba(16, 185, 129, 0.2);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        </div>
+                        <h5 class="card-title mb-2" style="font-size: 18px; font-weight: 700; color: #101828;">Ventes</h5>
+                        <p class="text-muted mb-0" style="font-size: 14px; line-height: 1.5;">Caisse et historique des ventes</p>
+                    </div>
+                    <div class="d-flex gap-2 mt-auto">
+                        <a asp-controller="Ventes" asp-action="Caisse" class="btn btn-primary flex-fill" style="font-weight: 600; border-radius: 10px; padding: 10px 20px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            Caisse
+                        </a>
+                        <a asp-controller="Ventes" asp-action="Index" class="btn btn-outline-primary flex-fill" style="font-weight: 600; border-radius: 10px; padding: 10px 20px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                            Historique
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="@(User.IsInRole("AdminReseau") ? "col-md-6 col-lg-3" : "col-md-6 col-lg-4")">
+            <div class="card surface h-100" style="border-left: 4px solid #f59e0b; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;" onclick="window.location.href='@Url.Action("Index", "Stocks")'">
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-3">
+                        <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 2px solid rgba(245, 158, 11, 0.2);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        </div>
+                        <h5 class="card-title mb-2" style="font-size: 18px; font-weight: 700; color: #101828;">Stocks</h5>
+                        <p class="text-muted mb-0" style="font-size: 14px; line-height: 1.5;">Stocks, mouvements, inventaires</p>
+                    </div>
+                    <a asp-controller="Stocks" asp-action="Index" class="btn btn-outline-primary mt-auto" style="font-weight: 600; border-radius: 10px; padding: 10px 20px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+                        Ouvrir
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Hero Section pour utilisateurs non authentifiés -->
+    <div class="hero-section" style="min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center; padding: 60px 20px;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8">
+                    <!-- Hero Card -->
+                    <div class="card surface" style="border: none; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05); border-radius: 24px; overflow: hidden; animation: fadeInUp 0.8s ease-out;">
+                        <div class="card-body p-5" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.02) 0%, rgba(219, 180, 56, 0.02) 100%);">
+                            <!-- Logo/Icon Section -->
+                            <div class="text-center mb-5">
+                                <div style="width: 100px; height: 100px; border-radius: 24px; background: linear-gradient(135deg, #3481c0 0%, #2563eb 100%); display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 12px 40px rgba(52, 129, 192, 0.35); margin-bottom: 24px; animation: float 3s ease-in-out infinite;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                </div>
+                                <h1 class="mb-3" style="font-size: 48px; font-weight: 800; color: #101828; line-height: 1.2; letter-spacing: -0.02em;">
+                                    G-StockVente
+                                </h1>
+                                <p class="lead mb-0" style="font-size: 20px; color: #667085; font-weight: 400; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+                                    Application multi-boutiques moderne pour ventes, stocks, achats et inventaires
+                                </p>
+                            </div>
+
+                            <!-- Features Grid -->
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(52, 129, 192, 0.1) 0%, rgba(52, 129, 192, 0.05) 100%); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 2px solid rgba(52, 129, 192, 0.15);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                        </div>
+                                        <h6 style="font-size: 16px; font-weight: 700; color: #101828; margin-bottom: 8px;">Caisse & Ventes</h6>
+                                        <p class="text-muted mb-0" style="font-size: 14px; line-height: 1.5;">Point de vente rapide et fiable</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(219, 180, 56, 0.1) 0%, rgba(219, 180, 56, 0.05) 100%); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 2px solid rgba(219, 180, 56, 0.15);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dbb438" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                                        </div>
+                                        <h6 style="font-size: 16px; font-weight: 700; color: #101828; margin-bottom: 8px;">Gestion Stock</h6>
+                                        <p class="text-muted mb-0" style="font-size: 14px; line-height: 1.5;">Suivi précis par boutique</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 2px solid rgba(16, 185, 129, 0.15);">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                        </div>
+                                        <h6 style="font-size: 16px; font-weight: 700; color: #101828; margin-bottom: 8px;">Rapports</h6>
+                                        <p class="text-muted mb-0" style="font-size: 14px; line-height: 1.5;">Tableaux de bord détaillés</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CTA Section -->
+                            <div class="text-center" style="padding-top: 24px; border-top: 2px dashed rgba(52, 129, 192, 0.2);">
+                                <p class="mb-4" style="font-size: 16px; color: #475569; font-weight: 500;">
+                                    Connectez-vous pour accéder aux modules (caisse, stocks, achats, rapports)
+                                </p>
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg" style="font-size: 16px; font-weight: 700; padding: 14px 32px; border-radius: 12px; box-shadow: 0 8px 24px rgba(52, 129, 192, 0.3); transition: all 0.3s ease;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"></path></svg>
+                                    Se connecter
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Styles {
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(52, 129, 192, 0.03) 0%, rgba(219, 180, 56, 0.02) 100%);
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 36px !important;
+        }
+        .hero-section .lead {
+            font-size: 18px !important;
+        }
+    }
+</style>
+}

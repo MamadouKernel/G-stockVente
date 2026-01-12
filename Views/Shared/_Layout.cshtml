@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @{
+        var boutiqueNom = ViewBag.BoutiqueNom as string;
+        var pageTitleValue = ViewData["Title"]?.ToString() ?? "";
+        string pageTitle;
+        if (!string.IsNullOrEmpty(boutiqueNom))
+        {
+            // Format: "G-StockVente - NomBoutique" ou "Titre - G-StockVente - NomBoutique"
+            if (pageTitleValue == "Accueil" || string.IsNullOrEmpty(pageTitleValue))
+            {
+                pageTitle = $"G-StockVente - {boutiqueNom}";
+            }
+            else
+            {
+                pageTitle = $"{pageTitleValue} - G-StockVente - {boutiqueNom}";
+            }
+        }
+        else
+        {
+            pageTitle = string.IsNullOrEmpty(pageTitleValue) ? "G-StockVente" : $"{pageTitleValue} - G-StockVente";
+        }
+    }
+    <title>@pageTitle</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/G_StockVente.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="app-shell">
+            @await Html.PartialAsync("_Sidebar")
+            <div class="app-main">
+                @await Html.PartialAsync("_Topbar")
+                <div class="container">
+                    <main role="main" class="pb-5" style="padding-bottom: 3rem !important;">
+                        @RenderBody()
+                    </main>
+                </div>
+                @await Html.PartialAsync("_Footer")
+            </div>
+        </div>
+    }
+    else
+    {
+        var isLoginPage = ViewContext.RouteData.Values["controller"]?.ToString() == "Account" && 
+                         ViewContext.RouteData.Values["action"]?.ToString() == "Login";
+        
+        @if (!isLoginPage)
+        {
+            <header>
+                @await Html.PartialAsync("_Topbar")
+            </header>
+        }
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+        @if (!isLoginPage)
+        {
+            @await Html.PartialAsync("_Footer")
+        }
+    }
+    
+    @* Toast notifications *@
+    @await Html.PartialAsync("_Toast")
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script src="~/js/notifications.js" asp-append-version="true"></script>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

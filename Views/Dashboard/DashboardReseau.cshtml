@@ -1,0 +1,185 @@
+@{
+    ViewData["Title"] = "Tableau de bord réseau";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title" style="font-size: 22px;">Tableau de bord réseau</h2>
+        <p class="page-subtitle">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Rapports" asp-action="Index" class="btn btn-outline-primary">Rapports</a>
+    </div>
+</div>
+
+<!-- Indicateurs clés -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="kpi">
+            <p class="kpi__label">Boutiques actives</p>
+            <p class="kpi__value">@ViewBag.NombreBoutiques</p>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="kpi kpi--success">
+            <p class="kpi__label">CA total aujourd'hui</p>
+            <p class="kpi__value">@(((decimal)ViewBag.CATotalAujourdhui).ToString("F2")) €</p>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="kpi kpi--info">
+            <p class="kpi__label">CA total ce mois</p>
+            <p class="kpi__value">@(((decimal)ViewBag.CATotalMois).ToString("F2")) €</p>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="kpi kpi--warning">
+            <p class="kpi__label">Stocks bas réseau</p>
+            <p class="kpi__value">@ViewBag.TotalStocksBas</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Graphique ventes 7 derniers jours -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                Ventes réseau - 7 derniers jours
+            </div>
+            <div class="card-body">
+                <canvas id="ventesChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top produits réseau -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                Top 5 produits réseau ce mois
+            </div>
+            <div class="card-body">
+                @if (ViewBag.TopProduitsReseau != null)
+                {
+                    <ol class="list-group list-group-numbered">
+                        @foreach (var produit in ViewBag.TopProduitsReseau as dynamic)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">@produit.ProduitNom</div>
+                                    <small>@produit.QuantiteVendue unités</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">@(((decimal)produit.MontantTotal).ToString("F2")) €</span>
+                            </li>
+                        }
+                    </ol>
+                }
+                else
+                {
+                    <p class="text-muted">Aucune vente ce mois</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- CA par boutique -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                CA par boutique ce mois
+            </div>
+            <div class="card-body">
+                @if (ViewBag.CAParBoutique != null)
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Boutique</th>
+                                <th>CA</th>
+                                <th>Ventes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var boutique in ViewBag.CAParBoutique as dynamic)
+                            {
+                                <tr>
+                                    <td><strong>@boutique.BoutiqueNom</strong></td>
+                                    <td>@(((decimal)boutique.Montant).ToString("F2")) €</td>
+                                    <td>@boutique.NombreVentes</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">Aucune vente ce mois</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertes réseau -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">Alertes réseau</div>
+            <div class="card-body">
+                @if (ViewBag.TotalStocksBas > 0)
+                {
+                    <div class="alert alert-warning">
+                        <strong>@ViewBag.TotalStocksBas</strong> produit(s) en stock bas sur le réseau
+                        <a asp-controller="Stocks" asp-action="Index" asp-route-stockBas="true" class="btn btn-sm btn-warning float-end">Voir</a>
+                    </div>
+                }
+                @if (ViewBag.AchatsEnAttente > 0)
+                {
+                    <div class="alert alert-info">
+                        <strong>@ViewBag.AchatsEnAttente</strong> achat(s) en attente
+                        <a asp-controller="Achats" asp-action="Index" asp-route-statut="1" class="btn btn-sm btn-info float-end">Voir</a>
+                    </div>
+                }
+                @if (ViewBag.TotalStocksBas == 0 && ViewBag.AchatsEnAttente == 0)
+                {
+                    <p class="text-muted mb-0">Aucune alerte</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ventesData = @Html.Raw(Json.Serialize(ViewBag.VentesParJour));
+        
+        const ctx = document.getElementById('ventesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ventesData.map(v => new Date(v.date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit' })),
+                datasets: [{
+                    label: 'Montant (€)',
+                    data: ventesData.map(v => v.montant),
+                    borderColor: '#3481c0',
+                    backgroundColor: 'rgba(52, 129, 192, 0.14)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
+
+

@@ -1,0 +1,107 @@
+@model G_StockVente.Domain.Models.Categorie
+@{
+    ViewData["Title"] = "Modifier la catégorie";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Modifier la catégorie</h1>
+        <p class="page-subtitle">Mise à jour des informations de la catégorie</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row form-page-container">
+    <div class="col-12 col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <div style="font-weight: 600;">Informations de la catégorie</div>
+                <small class="text-muted">Détails de la catégorie</small>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post" novalidate id="editForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="DateCreation" />
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label asp-for="Nom" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                Nom de la catégorie <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Nom" 
+                                   class="form-control" 
+                                   style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                   placeholder="Nom de la catégorie"
+                                   autofocus
+                                   required />
+                            <span asp-validation-for="Nom" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                Description
+                            </label>
+                            <textarea asp-for="Description" 
+                                      class="form-control" 
+                                      rows="3"
+                                      style="padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                      placeholder="Description de la catégorie (optionnel)"></textarea>
+                            <span asp-validation-for="Description" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="CategorieParenteId" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                Catégorie parente
+                            </label>
+                            <select asp-for="CategorieParenteId" 
+                                    class="form-select" 
+                                    style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                    asp-items="ViewBag.CategorieParenteId">
+                                <option value="">-- Catégorie principale (aucune parente) --</option>
+                            </select>
+                            <span asp-validation-for="CategorieParenteId" class="form-error"></span>
+                            <small class="text-muted" style="font-size: 13px; margin-top: var(--space-1); display: block;">
+                                Laissez vide pour une catégorie principale, ou sélectionnez une catégorie pour en faire une sous-catégorie
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr style="margin: var(--space-6) 0; border-color: var(--color-border);" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="btn btn-outline-primary" style="height: 42px; font-weight: 600; min-width: 120px;">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submitButton" style="height: 42px; font-weight: 600; min-width: 120px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: var(--space-2);"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('editForm')?.addEventListener('submit', function(e) {
+            const button = document.getElementById('submitButton');
+            if (button && !button.disabled) {
+                LoadingState.show(button);
+            }
+        });
+    </script>
+}
+

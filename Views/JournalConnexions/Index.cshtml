@@ -1,0 +1,184 @@
+@model IEnumerable<G_StockVente.Domain.Models.JournalConnexion>
+@{
+    ViewData["Title"] = "Journal des connexions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Journal des connexions</h1>
+        <p class="page-subtitle">Historique des tentatives de connexion</p>
+    </div>
+</div>
+
+<!-- Filtres -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-12 col-md-3">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    Date début
+                </label>
+                <input type="date" 
+                       name="dateDebut" 
+                       value="@(ViewBag.DateDebut?.ToString("yyyy-MM-dd"))"
+                       class="form-control" 
+                       style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;" />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    Date fin
+                </label>
+                <input type="date" 
+                       name="dateFin" 
+                       value="@(ViewBag.DateFin?.ToString("yyyy-MM-dd"))"
+                       class="form-control" 
+                       style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;" />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    Email
+                </label>
+                <input type="text" 
+                       name="email" 
+                       value="@ViewBag.Email"
+                       class="form-control" 
+                       style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                       placeholder="Email..." />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    Statut
+                </label>
+                <select name="succes" 
+                        class="form-select" 
+                        style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;">
+                    <option value="">Tous</option>
+                    <option value="true" selected="@(ViewBag.Succes == true)">Succès</option>
+                    <option value="false" selected="@(ViewBag.Succes == false)">Échec</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-12">
+                <button type="submit" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                    Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Liste -->
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.4;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <h3 class="empty-state__title">Aucune connexion</h3>
+                <p class="empty-state__text">Aucune tentative de connexion enregistrée pour cette période.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date/Heure</th>
+                            <th>Email</th>
+                            <th>Utilisateur</th>
+                            <th>Adresse IP</th>
+                            <th>Statut</th>
+                            <th>Raison</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var journal in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <small>@journal.DateTentative.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                                </td>
+                                <td>
+                                    <strong>@journal.Email</strong>
+                                </td>
+                                <td>
+                                    @if (journal.Utilisateur != null)
+                                    {
+                                        <span>@journal.Utilisateur.Prenom @journal.Utilisateur.Nom</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    <code style="font-size: 12px;">@(journal.AdresseIP ?? "—")</code>
+                                </td>
+                                <td>
+                                    @if (journal.Succes)
+                                    {
+                                        <span class="badge bg-success">✓ Succès</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">✗ Échec</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(journal.RaisonEchec))
+                                    {
+                                        <small class="text-danger">@journal.RaisonEchec</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details" asp-route-id="@journal.Id" class="btn btn-sm btn-outline-primary" title="Détails">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (ViewBag.TotalPages > 1)
+            {
+                <div class="card-footer">
+                    <nav aria-label="Pagination">
+                        <ul class="pagination justify-content-center mb-0">
+                            @if (ViewBag.Page > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(ViewBag.Page - 1)&dateDebut=@ViewBag.DateDebut?.ToString("yyyy-MM-dd")&dateFin=@ViewBag.DateFin?.ToString("yyyy-MM-dd")&email=@ViewBag.Email&succes=@ViewBag.Succes">Précédent</a>
+                                </li>
+                            }
+                            @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                            {
+                                <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                    <a class="page-link" href="?page=@i&dateDebut=@ViewBag.DateDebut?.ToString("yyyy-MM-dd")&dateFin=@ViewBag.DateFin?.ToString("yyyy-MM-dd")&email=@ViewBag.Email&succes=@ViewBag.Succes">@i</a>
+                                </li>
+                            }
+                            @if (ViewBag.Page < ViewBag.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(ViewBag.Page + 1)&dateDebut=@ViewBag.DateDebut?.ToString("yyyy-MM-dd")&dateFin=@ViewBag.DateFin?.ToString("yyyy-MM-dd")&email=@ViewBag.Email&succes=@ViewBag.Succes">Suivant</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                    <div class="text-center mt-3">
+                        <small class="text-muted">Page @ViewBag.Page sur @ViewBag.TotalPages (@ViewBag.TotalCount résultat(s))</small>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+

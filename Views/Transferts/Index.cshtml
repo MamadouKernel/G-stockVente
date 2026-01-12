@@ -1,0 +1,165 @@
+@model IEnumerable<G_StockVente.Domain.Models.TransfertStock>
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Transferts de Stock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var total = Model?.Count() ?? 0;
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Transferts de Stock</h1>
+        <p class="page-subtitle">Gestion des transferts entre dépôts et boutiques</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nouveau transfert
+        </a>
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-4 mb-6">
+    <div class="col-12 col-sm-6 col-md-4">
+        <div class="kpi kpi--primary">
+            <div class="kpi__label">Total transferts</div>
+            <div class="kpi__value">@total</div>
+            <div class="kpi__footer">Transferts enregistrés</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-4">
+        <div class="kpi kpi--warning">
+            <div class="kpi__label">En attente</div>
+            <div class="kpi__value">@(Model?.Count(t => t.Statut == StatutTransfert.EnAttente) ?? 0)</div>
+            <div class="kpi__footer">En attente de validation</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-4">
+        <div class="kpi kpi--success">
+            <div class="kpi__label">Reçus</div>
+            <div class="kpi__value">@(Model?.Count(t => t.Statut == StatutTransfert.Reçu) ?? 0)</div>
+            <div class="kpi__footer">Transferts complétés</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-12 col-md-6 col-lg-5">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><line x1="3" y1="6" x2="21" y2="6"></line><path d="M7 12h10M7 18h10M7 6v12"></path></svg>
+                    Statut
+                </label>
+                <select name="statut" 
+                        class="form-select" 
+                        style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                        aria-label="Filtrer par statut">
+                    <option value="">Tous les statuts</option>
+                    @foreach (var s in ViewBag.Statuts as IEnumerable<StatutTransfert> ?? Array.Empty<StatutTransfert>())
+                    {
+                        <option value="@((int)s)" selected="@(ViewBag.Statut?.ToString() == s.ToString())">@s</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <button type="submit" class="btn btn-primary w-100" style="height: 42px; font-weight: 600;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: var(--space-2);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                    Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Liste des transferts -->
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.4;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <h3 class="empty-state__title">Aucun transfert</h3>
+                <p class="empty-state__text">Aucun transfert de stock n'a été créé pour le moment.</p>
+                <a asp-action="Create" class="btn btn-primary mt-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Créer le premier transfert
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Source</th>
+                            <th>Destination</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th>Créé par</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transfert in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@transfert.Numero</strong>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div><strong>@(transfert.DepotSource?.Nom ?? "N/A")</strong></div>
+                                        @if (transfert.BoutiqueSource != null)
+                                        {
+                                            <small class="text-muted">@transfert.BoutiqueSource.Nom</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div><strong>@(transfert.DepotDestination?.Nom ?? "N/A")</strong></div>
+                                        @if (transfert.BoutiqueDestination != null)
+                                        {
+                                            <small class="text-muted">@transfert.BoutiqueDestination.Nom</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>@transfert.DateCreation.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @{
+                                        var statutClass = transfert.Statut switch
+                                        {
+                                            StatutTransfert.EnAttente => "badge-warning",
+                                            StatutTransfert.Valide => "badge-info",
+                                            StatutTransfert.EnTransit => "badge-primary",
+                                            StatutTransfert.Reçu => "badge-success",
+                                            StatutTransfert.Annule => "badge-secondary",
+                                            _ => "badge-secondary"
+                                        };
+                                    }
+                                    <span class="badge @statutClass">@transfert.Statut</span>
+                                </td>
+                                <td>@(transfert.UtilisateurCreateur?.Prenom ?? "") @(transfert.UtilisateurCreateur?.Nom ?? "")</td>
+                                <td class="text-end">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@transfert.Id" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="Détails">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

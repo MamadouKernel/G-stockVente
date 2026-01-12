@@ -1,0 +1,11 @@
+@model string
+<div class="empty-state">
+    @if (!string.IsNullOrWhiteSpace(Model))
+    {
+        @Model
+    }
+    else
+    {
+        <text>Aucune donnée disponible.</text>
+    }
+</div>

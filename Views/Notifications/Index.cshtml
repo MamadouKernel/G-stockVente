@@ -1,0 +1,147 @@
+@model IEnumerable<G_StockVente.Domain.Models.Notification>
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Notifications";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var total = Model?.Count() ?? 0;
+    var nonLues = Model?.Count(n => !n.EstLue) ?? 0;
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Notifications</h1>
+        <p class="page-subtitle">Centre de notifications</p>
+    </div>
+    <div class="page-actions">
+        @if (nonLues > 0)
+        {
+            <form asp-action="MarquerToutesCommeLues" method="post" style="display: inline;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Tout marquer comme lu
+                </button>
+            </form>
+        }
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="row g-4 mb-6">
+    <div class="col-12 col-sm-6 col-md-4">
+        <div class="kpi kpi--primary">
+            <div class="kpi__label">Total</div>
+            <div class="kpi__value">@total</div>
+            <div class="kpi__footer">Notifications</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-4">
+        <div class="kpi kpi--warning">
+            <div class="kpi__label">Non lues</div>
+            <div class="kpi__value">@nonLues</div>
+            <div class="kpi__footer">Requièrent attention</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-4">
+        <div class="kpi kpi--success">
+            <div class="kpi__label">Lues</div>
+            <div class="kpi__value">@(total - nonLues)</div>
+            <div class="kpi__footer">Consultées</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-12 col-md-6 col-lg-5">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><line x1="3" y1="6" x2="21" y2="6"></line><path d="M7 12h10M7 18h10M7 6v12"></path></svg>
+                    Filtre
+                </label>
+                <select name="estLue" 
+                        class="form-select" 
+                        style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                        aria-label="Filtrer par statut">
+                    <option value="">Toutes</option>
+                    <option value="false" selected="@(ViewBag.EstLue == false)">Non lues</option>
+                    <option value="true" selected="@(ViewBag.EstLue == true)">Lues</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <button type="submit" class="btn btn-primary w-100" style="height: 42px; font-weight: 600;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: var(--space-2);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                    Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Liste des notifications -->
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.4;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <h3 class="empty-state__title">Aucune notification</h3>
+                <p class="empty-state__text">Vous n'avez aucune notification pour le moment.</p>
+            </div>
+        }
+        else
+        {
+            <div class="list-group list-group-flush">
+                @foreach (var notification in Model)
+                {
+                    <div class="list-group-item @(!notification.EstLue ? "list-group-item-action bg-light" : "")" style="padding: var(--space-4); border-left: @(!notification.EstLue ? "4px solid var(--color-primary)" : "none");">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    @if (!notification.EstLue)
+                                    {
+                                        <span class="badge bg-primary me-2" style="font-size: 8px; padding: 4px 6px;">NOUVEAU</span>
+                                    }
+                                    <h6 class="mb-0" style="font-weight: @(!notification.EstLue ? "600" : "500"); font-size: 15px;">@notification.Titre</h6>
+                                </div>
+                                <p class="mb-2" style="color: var(--color-text); font-size: 14px; line-height: 1.5;">@notification.Message</p>
+                                <div class="d-flex align-items-center gap-3" style="font-size: 12px; color: var(--color-text-subtle);">
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                        @notification.DateCreation.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                    <span class="badge bg-secondary">@notification.Type</span>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 ms-3">
+                                @if (!string.IsNullOrEmpty(notification.LienAction))
+                                {
+                                    <a href="@notification.LienAction" class="btn btn-sm btn-outline-primary" title="Voir">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </a>
+                                }
+                                @if (!notification.EstLue)
+                                {
+                                    <form asp-action="MarquerCommeLue" asp-route-id="@notification.Id" method="post" style="display: inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Marquer comme lu">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        </button>
+                                    </form>
+                                }
+                                <form asp-action="Supprimer" asp-route-id="@notification.Id" method="post" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette notification ?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+

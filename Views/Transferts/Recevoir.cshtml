@@ -1,0 +1,200 @@
+@model G_StockVente.Domain.Models.TransfertStock
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Réception du transfert";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Réception du transfert @Model.Numero</h1>
+        <p class="page-subtitle">Enregistrer la réception des produits</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Informations du transfert -->
+    <div class="col-12 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Informations du transfert</h5>
+            </div>
+            <div class="card-body">
+                <dl class="mb-0">
+                    <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Numéro</dt>
+                    <dd style="margin-bottom: 16px;"><strong>@Model.Numero</strong></dd>
+
+                    <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Source</dt>
+                    <dd style="margin-bottom: 16px;">
+                        <strong>@(Model.DepotSource?.Nom ?? "N/A")</strong>
+                        @if (Model.BoutiqueSource != null)
+                        {
+                            <br /><small class="text-muted">@Model.BoutiqueSource.Nom</small>
+                        }
+                    </dd>
+
+                    <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Destination</dt>
+                    <dd style="margin-bottom: 16px;">
+                        <strong>@(Model.DepotDestination?.Nom ?? "N/A")</strong>
+                        @if (Model.BoutiqueDestination != null)
+                        {
+                            <br /><small class="text-muted">@Model.BoutiqueDestination.Nom</small>
+                        }
+                    </dd>
+
+                    <dt style="font-size: 13px; color: var(--color-text-subtle); margin-bottom: 4px;">Statut</dt>
+                    <dd>
+                        @{
+                            var statutClass = Model.Statut switch
+                            {
+                                StatutTransfert.Valide => "badge-info",
+                                StatutTransfert.EnTransit => "badge-primary",
+                                _ => "badge-secondary"
+                            };
+                        }
+                        <span class="badge @statutClass">@Model.Statut</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulaire de réception -->
+    <div class="col-12 col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Quantités reçues</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Recevoir" asp-route-id="@Model.Id" method="post" id="recevoirForm">
+                    @Html.AntiForgeryToken()
+                    
+                    <p class="text-muted mb-4">
+                        Vérifiez les quantités reçues pour chaque produit. Les quantités peuvent différer de celles commandées en cas de casse ou de perte.
+                    </p>
+
+                    @if (Model.LignesTransfert == null || !Model.LignesTransfert.Any())
+                    {
+                        <div class="alert alert-warning">
+                            Aucun produit dans ce transfert.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40%;">Produit</th>
+                                        <th class="text-center" style="width: 20%;">Quantité demandée</th>
+                                        <th class="text-center" style="width: 25%;">Quantité reçue</th>
+                                        <th style="width: 15%;">Écart</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ligne in Model.LignesTransfert)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight: 600;">@(ligne.ProduitBoutique?.Produit?.Nom ?? "N/A")</div>
+                                                @if (!string.IsNullOrEmpty(ligne.ProduitBoutique?.Sku))
+                                                {
+                                                    <small class="text-muted">SKU: @ligne.ProduitBoutique.Sku</small>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-primary">@ligne.Quantite</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="number" 
+                                                       name="quantitesRecues[@ligne.Id]" 
+                                                       value="@(ligne.QuantiteRecue ?? ligne.Quantite)"
+                                                       min="0"
+                                                       max="@(ligne.Quantite + 50)"
+                                                       class="form-control quantite-recue" 
+                                                       style="width: 100px; margin: 0 auto; text-align: center;"
+                                                       data-quantite-demandee="@ligne.Quantite"
+                                                       data-ligne-id="@ligne.Id"
+                                                       required />
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="ecart-badge" data-ligne-id="@ligne.Id">—</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="alert alert-info mt-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <strong>Important :</strong> Les stocks seront automatiquement mis à jour lors de la validation de la réception.
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 mt-4">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Confirmer la réception
+                            </button>
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Calculer les écarts en temps réel
+        document.querySelectorAll('.quantite-recue').forEach(function(input) {
+            input.addEventListener('input', function() {
+                const quantiteDemandee = parseInt(this.getAttribute('data-quantite-demandee'));
+                const quantiteRecue = parseInt(this.value) || 0;
+                const ecart = quantiteRecue - quantiteDemandee;
+                const ligneId = this.getAttribute('data-ligne-id');
+                const ecartBadge = document.querySelector('.ecart-badge[data-ligne-id="' + ligneId + '"]');
+                
+                if (ecart === 0) {
+                    ecartBadge.innerHTML = '<span class="badge bg-success">OK</span>';
+                } else if (ecart > 0) {
+                    ecartBadge.innerHTML = '<span class="badge bg-info">+' + ecart + '</span>';
+                } else {
+                    ecartBadge.innerHTML = '<span class="badge bg-warning">' + ecart + '</span>';
+                }
+            });
+            
+            // Déclencher le calcul initial
+            input.dispatchEvent(new Event('input'));
+        });
+
+        // Validation du formulaire
+        document.getElementById('recevoirForm').addEventListener('submit', function(e) {
+            let allValid = true;
+            document.querySelectorAll('.quantite-recue').forEach(function(input) {
+                const value = parseInt(input.value);
+                if (isNaN(value) || value < 0) {
+                    allValid = false;
+                }
+            });
+
+            if (!allValid) {
+                e.preventDefault();
+                alert('Veuillez saisir des quantités valides (≥ 0) pour tous les produits.');
+                return false;
+            }
+
+            return confirm('Confirmez-vous la réception de ces produits ? Les stocks seront mis à jour automatiquement.');
+        });
+    </script>
+}
+

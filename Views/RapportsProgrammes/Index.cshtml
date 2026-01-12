@@ -1,0 +1,134 @@
+@model IEnumerable<G_StockVente.Domain.Models.RapportProgramme>
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Rapports programmés";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Rapports programmés</h1>
+        <p class="page-subtitle">Gestion des rapports automatiques par email</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nouveau rapport programmé
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.4;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <h3 class="empty-state__title">Aucun rapport programmé</h3>
+                <p class="empty-state__text">Créez votre premier rapport programmé pour recevoir des rapports automatiques par email.</p>
+                <a asp-action="Create" class="btn btn-primary">Créer un rapport programmé</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Fréquence</th>
+                            <th>Boutique</th>
+                            <th>Email destinataire</th>
+                            <th>Statut</th>
+                            <th>Dernière exécution</th>
+                            <th>Prochaine exécution</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rapport in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-primary">@rapport.TypeRapport</span>
+                                </td>
+                                <td>
+                                    @(rapport.Frequence switch
+                                    {
+                                        FrequenceRapport.Journalier => "Journalier",
+                                        FrequenceRapport.Hebdomadaire => "Hebdomadaire",
+                                        FrequenceRapport.Mensuel => "Mensuel",
+                                        _ => rapport.Frequence.ToString()
+                                    })
+                                </td>
+                                <td>
+                                    @(rapport.Boutique?.Nom ?? "Consolidé réseau")
+                                </td>
+                                <td>
+                                    <small>@rapport.EmailDestinataire</small>
+                                </td>
+                                <td>
+                                    @if (rapport.EstActif)
+                                    {
+                                        <span class="badge bg-success">Actif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactif</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (rapport.DerniereExecution.HasValue)
+                                    {
+                                        <small>@rapport.DerniereExecution.Value.ToString("dd/MM/yyyy HH:mm")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Jamais</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (rapport.ProchaineExecution.HasValue)
+                                    {
+                                        <small><strong>@rapport.ProchaineExecution.Value.ToString("dd/MM/yyyy HH:mm")</strong></small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Edit" asp-route-id="@rapport.Id" class="btn btn-outline-primary" title="Modifier">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                        </a>
+                                        <form asp-action="ToggleActif" asp-route-id="@rapport.Id" method="post" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir @(rapport.EstActif ? "désactiver" : "activer") ce rapport ?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-@(rapport.EstActif ? "warning" : "success")" title="@(rapport.EstActif ? "Désactiver" : "Activer")">
+                                                @if (rapport.EstActif)
+                                                {
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                                }
+                                                else
+                                                {
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                }
+                                            </button>
+                                        </form>
+                                        <form asp-action="Delete" asp-route-id="@rapport.Id" method="post" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce rapport programmé ?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger" title="Supprimer">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

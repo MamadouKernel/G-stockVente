@@ -1,0 +1,128 @@
+/* ============================================
+   BASE STYLES
+   Reset, typography, and global elements
+   ============================================ */
+
+/* === HTML & Body === */
+html {
+  font-size: 15px;
+  position: relative;
+  min-height: 100%;
+  font-family: var(--font-family);
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Typography === */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+  color: var(--color-text);
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 17px;
+}
+
+h5, h6 {
+  font-size: 15px;
+}
+
+p {
+  margin: 0 0 var(--space-4);
+}
+
+small {
+  font-size: var(--font-size-sm);
+}
+
+.caption {
+  font-size: var(--font-size-xs);
+  color: var(--color-muted);
+}
+
+/* === Links === */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* === Code === */
+code, pre {
+  font-family: var(--font-family-mono);
+  font-size: 13px;
+}
+
+code {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* === Main Content === */
+main[role="main"] {
+  padding: var(--space-6) var(--space-4);
+  min-height: calc(100vh - 200px);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+@media (min-width: 768px) {
+  main[role="main"] {
+    padding: var(--space-8) var(--space-6);
+  }
+}
+
+/* === Selection === */
+::selection {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+@media print {
+  body { background: #fff !important; margin: 0 !important; }
+  .app-sidebar, .topbar, .footer { display: none !important; }
+  .container { max-width: none !important; }
+  a { text-decoration: none !important; color: #000 !important; }
+}

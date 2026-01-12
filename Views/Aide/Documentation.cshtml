@@ -1,0 +1,354 @@
+@{
+    ViewData["Title"] = ViewBag.Title ?? "Documentation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var markdownContent = ViewBag.MarkdownContent as string;
+    var htmlContent = ViewBag.HtmlContent as string;
+    var error = ViewBag.Error as string;
+    var documentName = ViewBag.DocumentName as string;
+    var availableDocuments = ViewBag.AvailableDocuments as Dictionary<string, (string fileName, string title)>;
+    var fileName = ViewBag.FileName as string;
+}
+
+<div class="page-header">
+    <div>
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <div style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3481c0 0%, #2563eb 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(52, 129, 192, 0.3);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            </div>
+            <div>
+                <h1 class="page-title mb-1">@ViewBag.Title</h1>
+                <p class="page-subtitle mb-0">
+                    @if (!string.IsNullOrEmpty(fileName))
+                    {
+                        <span>Fichier : <code>@fileName</code></span>
+                    }
+                    else
+                    {
+                        <span>Documentation de l'application</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+            Retour à l'aide
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-lg-3">
+        <div class="card surface" style="position: sticky; top: 20px;">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.05) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 1px solid rgba(52, 129, 192, 0.15);">
+                <h3 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: 15px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <span style="color: #3481c0; font-weight: 600;">Autres documents</span>
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                @if (availableDocuments != null)
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var doc in availableDocuments)
+                        {
+                            <a asp-action="Documentation" asp-route-document="@doc.Key" 
+                               class="list-group-item list-group-item-action @(documentName == doc.Key ? "active" : "") d-flex align-items-center justify-content-between"
+                               style="border: none; padding: 12px 16px; @(documentName == doc.Key ? "background: linear-gradient(135deg, rgba(52, 129, 192, 0.1) 0%, rgba(219, 180, 56, 0.05) 100%); border-left: 3px solid #3481c0 !important;" : "")">
+                                <div class="d-flex align-items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="@(documentName == doc.Key ? "#3481c0" : "#667085")" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                    <span style="font-weight: @(documentName == doc.Key ? "600" : "400"); color: @(documentName == doc.Key ? "#3481c0" : "#101828");">@doc.Value.title</span>
+                                </div>
+                                @if (documentName == doc.Key)
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                }
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-9">
+        <div class="card surface">
+            <div class="card-body p-0">
+                @if (!string.IsNullOrEmpty(error))
+                {
+                    <div class="p-4">
+                        <div class="alert alert-warning d-flex align-items-center gap-3" style="border-left: 4px solid #dbb438; border-radius: 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dbb438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            <div>
+                                <strong style="color: #8b6f1f;">Document introuvable</strong>
+                                <p class="mb-0" style="color: #8b6f1f;">@error</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-muted">Les fichiers de documentation doivent être placés à la racine du projet :</p>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><code>GUIDE_UTILISATION.md</code></li>
+                                <li class="mb-2"><code>WORKFLOW_COMPLET.md</code></li>
+                                <li class="mb-2"><code>INDEX_DOCUMENTATION.md</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(htmlContent))
+                {
+                    <div class="p-5" style="max-width: 100%; overflow-x: auto;">
+                        <article id="markdown-content" class="markdown-body">
+                            @Html.Raw(htmlContent)
+                        </article>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(markdownContent))
+                {
+                    <div class="p-5" style="max-width: 100%; overflow-x: auto;">
+                        <article id="markdown-content" class="markdown-body">
+                            <pre style="white-space: pre-wrap; font-family: ui-monospace, monospace; color: #374151;">@markdownContent</pre>
+                        </article>
+                    </div>
+                }
+                else
+                {
+                    <div class="p-4 text-center">
+                        <div class="empty-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                            <p class="empty-state__title">Aucun contenu disponible</p>
+                            <p class="empty-state__subtitle">Le document n'a pas de contenu à afficher.</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    <style>
+        .markdown-body {
+            line-height: 1.75;
+            color: #101828;
+            font-size: 15px;
+        }
+        
+        .markdown-body h1 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #101828;
+            border-bottom: 3px solid rgba(52, 129, 192, 0.2);
+            padding-bottom: 0.75rem;
+        }
+        
+        .markdown-body h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 1.25rem;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #101828;
+            border-bottom: 2px solid rgba(52, 129, 192, 0.15);
+            padding-bottom: 0.5rem;
+        }
+        
+        .markdown-body h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #101828;
+        }
+        
+        .markdown-body h4 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #101828;
+        }
+        
+        .markdown-body h5, .markdown-body h6 {
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #101828;
+        }
+        
+        .markdown-body p {
+            margin-bottom: 1rem;
+            line-height: 1.75;
+            color: #374151;
+        }
+        
+        .markdown-body a {
+            color: #3481c0;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(52, 129, 192, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .markdown-body a:hover {
+            color: #2f73ab;
+            border-bottom-color: #2f73ab;
+        }
+        
+        .markdown-body code {
+            background: rgba(52, 129, 192, 0.1);
+            color: #3481c0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            font-size: 0.9em;
+            font-weight: 600;
+            word-break: break-word;
+        }
+        
+        .markdown-body pre {
+            background: linear-gradient(135deg, #f4f6fb 0%, #ffffff 100%);
+            border: 1px solid rgba(16, 24, 40, 0.1);
+            border-left: 4px solid #3481c0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .markdown-body pre code {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            color: #101828;
+            font-weight: 400;
+            border: none;
+        }
+        
+        .markdown-body blockquote {
+            border-left: 4px solid #3481c0;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            color: #667085;
+            font-style: italic;
+            background: linear-gradient(135deg, rgba(52, 129, 192, 0.05) 0%, rgba(219, 180, 56, 0.03) 100%);
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .markdown-body ul, .markdown-body ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        .markdown-body ul {
+            list-style: none;
+        }
+        
+        .markdown-body ul li::before {
+            content: "▶";
+            color: #dbb438;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1.5em;
+            margin-right: 0.5em;
+        }
+        
+        .markdown-body ol {
+            counter-reset: item;
+        }
+        
+        .markdown-body ol li {
+            counter-increment: item;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-body ol li::before {
+            content: counter(item) ".";
+            color: #3481c0;
+            font-weight: 700;
+            display: inline-block;
+            width: 1.5em;
+            margin-left: -2rem;
+            margin-right: 0.5rem;
+        }
+        
+        .markdown-body li {
+            margin-bottom: 0.5rem;
+            line-height: 1.75;
+            color: #374151;
+        }
+        
+        .markdown-body table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+        
+        .markdown-body table thead {
+            background: linear-gradient(135deg, rgba(52, 129, 192, 0.1) 0%, rgba(219, 180, 56, 0.05) 100%);
+        }
+        
+        .markdown-body table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #101828;
+            border-bottom: 2px solid rgba(16, 24, 40, 0.1);
+        }
+        
+        .markdown-body table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(16, 24, 40, 0.06);
+            color: #374151;
+        }
+        
+        .markdown-body table tbody tr {
+            transition: all 0.2s ease;
+        }
+        
+        .markdown-body table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(52, 129, 192, 0.06) 0%, rgba(52, 129, 192, 0.02) 100%);
+            transform: scale(1.01);
+        }
+        
+        .markdown-body hr {
+            margin: 2.5rem 0;
+            border: none;
+            border-top: 2px solid rgba(16, 24, 40, 0.1);
+            background: linear-gradient(90deg, transparent 0%, #3481c0 50%, transparent 100%);
+            height: 2px;
+        }
+        
+        .markdown-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .markdown-body strong {
+            font-weight: 700;
+            color: #101828;
+        }
+        
+        .markdown-body em {
+            font-style: italic;
+            color: #374151;
+        }
+    </style>
+}

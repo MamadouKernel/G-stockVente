@@ -1,0 +1,257 @@
+@model G_StockVente.Domain.Models.TransfertStock
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Détails du transfert";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Transfert @Model.Numero</h1>
+        <p class="page-subtitle">Détails du transfert de stock</p>
+    </div>
+    <div class="page-actions">
+        @if (Model.Statut == StatutTransfert.EnAttente)
+        {
+            <form asp-action="Valider" asp-route-id="@Model.Id" method="post" style="display: inline;" class="me-2">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-success" onclick="return confirm('Êtes-vous sûr de vouloir valider ce transfert ?');">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Valider
+                </button>
+            </form>
+        }
+        
+        @if (Model.Statut == StatutTransfert.Valide || Model.Statut == StatutTransfert.EnTransit)
+        {
+            <a asp-action="Recevoir" asp-route-id="@Model.Id" class="btn btn-primary me-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                Recevoir
+            </a>
+        }
+        
+        @if (Model.Statut != StatutTransfert.Reçu && Model.Statut != StatutTransfert.Annule)
+        {
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#annulerModal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                Annuler
+            </button>
+        }
+        
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<!-- Statut et informations principales -->
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="kpi kpi--primary">
+            <div class="kpi__label">Statut</div>
+            <div class="kpi__value">
+                @{
+                    var statutClass = Model.Statut switch
+                    {
+                        StatutTransfert.EnAttente => "badge-warning",
+                        StatutTransfert.Valide => "badge-info",
+                        StatutTransfert.EnTransit => "badge-primary",
+                        StatutTransfert.Reçu => "badge-success",
+                        StatutTransfert.Annule => "badge-secondary",
+                        _ => "badge-secondary"
+                    };
+                }
+                <span class="badge @statutClass" style="font-size: 14px;">@Model.Statut</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="kpi">
+            <div class="kpi__label">Produits</div>
+            <div class="kpi__value">@(Model.LignesTransfert?.Count() ?? 0)</div>
+            <div class="kpi__footer">Lignes de transfert</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="kpi">
+            <div class="kpi__label">Date création</div>
+            <div class="kpi__value" style="font-size: 16px;">@Model.DateCreation.ToString("dd/MM/yyyy")</div>
+            <div class="kpi__footer">@Model.DateCreation.ToString("HH:mm")</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="kpi">
+            <div class="kpi__label">Créé par</div>
+            <div class="kpi__value" style="font-size: 16px;">@(Model.UtilisateurCreateur?.Prenom ?? "") @(Model.UtilisateurCreateur?.Nom ?? "")</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Informations du transfert -->
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Informations du transfert</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Numéro</dt>
+                    <dd class="col-sm-7"><strong>@Model.Numero</strong></dd>
+
+                    <dt class="col-sm-5">Dépôt source</dt>
+                    <dd class="col-sm-7">
+                        <strong>@(Model.DepotSource?.Nom ?? "N/A")</strong>
+                        @if (Model.BoutiqueSource != null)
+                        {
+                            <br /><small class="text-muted">@Model.BoutiqueSource.Nom</small>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-5">Dépôt destination</dt>
+                    <dd class="col-sm-7">
+                        <strong>@(Model.DepotDestination?.Nom ?? "N/A")</strong>
+                        @if (Model.BoutiqueDestination != null)
+                        {
+                            <br /><small class="text-muted">@Model.BoutiqueDestination.Nom</small>
+                        }
+                    </dd>
+
+                    @if (Model.DateValidation.HasValue)
+                    {
+                        <dt class="col-sm-5">Date validation</dt>
+                        <dd class="col-sm-7">@Model.DateValidation.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                        
+                        @if (Model.UtilisateurValidateur != null)
+                        {
+                            <dt class="col-sm-5">Validé par</dt>
+                            <dd class="col-sm-7">@Model.UtilisateurValidateur.Prenom @Model.UtilisateurValidateur.Nom</dd>
+                        }
+                    }
+
+                    @if (Model.DateReception.HasValue)
+                    {
+                        <dt class="col-sm-5">Date réception</dt>
+                        <dd class="col-sm-7">@Model.DateReception.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                        
+                        @if (Model.UtilisateurRecepteur != null)
+                        {
+                            <dt class="col-sm-5">Reçu par</dt>
+                            <dd class="col-sm-7">@Model.UtilisateurRecepteur.Prenom @Model.UtilisateurRecepteur.Nom</dd>
+                        }
+                    }
+
+                    @if (Model.DateAnnulation.HasValue)
+                    {
+                        <dt class="col-sm-5">Date annulation</dt>
+                        <dd class="col-sm-7">@Model.DateAnnulation.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <dt class="col-sm-12 mt-3">Notes</dt>
+                        <dd class="col-sm-12">@Model.Notes</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lignes de transfert -->
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" style="font-weight: 600; font-size: 15px;">Produits transférés</h5>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.LignesTransfert == null || !Model.LignesTransfert.Any())
+                {
+                    <div class="p-4 text-center text-muted">
+                        <p>Aucun produit dans ce transfert.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th class="text-center">Quantité</th>
+                                    @if (Model.Statut == StatutTransfert.Reçu)
+                                    {
+                                        <th class="text-center">Quantité reçue</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ligne in Model.LignesTransfert)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight: 600;">@(ligne.ProduitBoutique?.Produit?.Nom ?? "N/A")</div>
+                                            @if (!string.IsNullOrEmpty(ligne.ProduitBoutique?.Sku))
+                                            {
+                                                <small class="text-muted">SKU: @ligne.ProduitBoutique.Sku</small>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">@ligne.Quantite</span>
+                                        </td>
+                                        @if (Model.Statut == StatutTransfert.Reçu)
+                                        {
+                                            <td class="text-center">
+                                                @if (ligne.QuantiteRecue.HasValue)
+                                                {
+                                                    var diff = ligne.QuantiteRecue.Value - ligne.Quantite;
+                                                    var badgeClass = diff == 0 ? "bg-success" : diff > 0 ? "bg-info" : "bg-warning";
+                                                    <span class="badge @badgeClass">@ligne.QuantiteRecue.Value</span>
+                                                    @if (diff != 0)
+                                                    {
+                                                        <br /><small class="text-muted">(@(diff > 0 ? "+" : "")@diff)</small>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal d'annulation -->
+<div class="modal fade" id="annulerModal" tabindex="-1" aria-labelledby="annulerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Annuler" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="annulerModalLabel">Annuler le transfert</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir annuler ce transfert ?</p>
+                    <div class="mb-3">
+                        <label for="raison" class="form-label">Raison de l'annulation (optionnel)</label>
+                        <textarea name="raison" id="raison" class="form-control" rows="3" placeholder="Expliquez pourquoi vous annulez ce transfert..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-danger">Annuler le transfert</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

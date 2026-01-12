@@ -1,0 +1,341 @@
+@model IEnumerable<G_StockVente.Controllers.UtilisateurViewModel>
+@{
+    ViewData["Title"] = "Gestion des utilisateurs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title">Gestion des utilisateurs</h1>
+        <p class="page-subtitle">Gestion des comptes, rôles, boutiques et sécurité</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nouvel utilisateur
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-left: 4px solid #10b981; border-radius: 12px;">
+        <div class="d-flex align-items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <strong>Succès :</strong> @TempData["Success"]
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="border-left: 4px solid #ef4444; border-radius: 12px;">
+        <div class="d-flex align-items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <strong>Erreur :</strong> @TempData["Error"]
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+}
+
+<!-- Filtres -->
+<div class="card surface mb-4" style="border-left: 4px solid #3481c0;">
+    <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.05) 0%, rgba(52, 129, 192, 0.02) 100%); border-bottom: 1px solid rgba(52, 129, 192, 0.15);">
+        <div style="font-weight: 600; color: #3481c0; font-size: 16px;">Recherche et filtres</div>
+        <small class="text-muted" style="font-size: 13px;">Filtrez la liste des utilisateurs</small>
+    </div>
+    <div class="card-body">
+        <form method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-lg-4">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                        Recherche
+                    </label>
+                    <input type="text" 
+                           name="searchTerm" 
+                           value="@ViewBag.SearchTerm" 
+                           class="form-control" 
+                           style="height: 42px; padding: 12px 16px; font-size: 14px; border-radius: 10px; border: 1.5px solid rgba(16, 24, 40, 0.1);"
+                           placeholder="Nom, prénom, email..." 
+                           autocomplete="off"
+                           aria-label="Rechercher un utilisateur" />
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        Rôle
+                    </label>
+                    <select name="roleFilter" 
+                            class="form-select" 
+                            style="height: 42px; padding: 12px 16px; font-size: 14px; border-radius: 10px; border: 1.5px solid rgba(16, 24, 40, 0.1);"
+                            aria-label="Filtrer par rôle">
+                        <option value="">Tous les rôles</option>
+                        @foreach (var role in ViewBag.Roles as List<Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>> ?? new List<Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>>())
+                        {
+                            <option value="@role.Name" selected="@(ViewBag.RoleFilter == role.Name)">@role.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Statut
+                    </label>
+                    <select name="actifFilter" 
+                            class="form-select" 
+                            style="height: 42px; padding: 12px 16px; font-size: 14px; border-radius: 10px; border: 1.5px solid rgba(16, 24, 40, 0.1);"
+                            aria-label="Filtrer par statut">
+                        <option value="">Tous</option>
+                        <option value="true" selected="@(ViewBag.ActifFilter == true)">Actifs</option>
+                        <option value="false" selected="@(ViewBag.ActifFilter == false)">Inactifs</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-2">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: 8px; color: #101828; font-size: 14px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px; color: #3481c0;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        Supprimés
+                    </label>
+                    <select name="inclureSupprimes" 
+                            class="form-select" 
+                            style="height: 42px; padding: 12px 16px; font-size: 14px; border-radius: 10px; border: 1.5px solid rgba(16, 24, 40, 0.1);"
+                            aria-label="Inclure les utilisateurs supprimés">
+                        <option value="false" selected="@(ViewBag.InclureSupprimes != true)">Non</option>
+                        <option value="true" selected="@(ViewBag.InclureSupprimes == true)">Oui</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-6 col-lg-1">
+                    <button type="submit" class="btn btn-primary w-100" style="height: 42px; font-weight: 600; border-radius: 10px; padding: 10px 16px;" title="Appliquer les filtres">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Liste des utilisateurs -->
+@if (!Model.Any())
+{
+    <div class="empty-state" style="min-height: 400px; padding: 60px 20px;">
+        <div class="empty-state-icon" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, rgba(52, 129, 192, 0.1) 0%, rgba(52, 129, 192, 0.05) 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px dashed rgba(52, 129, 192, 0.3);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <h5 class="empty-state-title" style="font-size: 20px; font-weight: 700; color: #101828; margin-bottom: 12px;">Aucun utilisateur trouvé</h5>
+        <p class="empty-state-message" style="font-size: 15px; color: #667085; margin-bottom: 24px;">Aucun utilisateur ne correspond à vos critères de recherche.</p>
+        <a asp-action="Create" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Créer un utilisateur
+        </a>
+    </div>
+}
+else
+{
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="mb-1" style="font-weight: 600; color: #dbb438; font-size: 18px;">Liste des utilisateurs</h5>
+                <small class="text-muted" style="font-size: 14px;">@Model.Count() utilisateur(s) trouvé(s)</small>
+            </div>
+        </div>
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                    <div class="card surface h-100" style="border-left: 4px solid @(item.EstSupprime ? "#ef4444" : item.EstActif ? "#10b981" : "#667085"); transition: all 0.3s ease; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 0, 0, 0.12)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)';">
+                        <div class="card-body p-4">
+                            <!-- Header avec avatar et actions -->
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(52, 129, 192, 0.15) 0%, rgba(52, 129, 192, 0.08) 100%); display: flex; align-items: center; justify-content: center; border: 3px solid rgba(52, 129, 192, 0.2); flex-shrink: 0;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1" style="font-weight: 700; font-size: 16px; color: #101828; margin: 0;">@item.Prenom @item.Nom</h6>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap mt-1">
+                                            @if (item.EstSupprime)
+                                            {
+                                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.08) 100%); color: #dc2626; font-size: 10px; font-weight: 600; padding: 3px 8px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 3px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                                    Supprimé
+                                                </span>
+                                            }
+                                            else if (item.EstActif)
+                                            {
+                                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%); color: #059669; font-size: 10px; font-weight: 600; padding: 3px 8px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 3px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                                    Actif
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(102, 112, 133, 0.15) 0%, rgba(102, 112, 133, 0.08) 100%); color: #475569; font-size: 10px; font-weight: 600; padding: 3px 8px; border: 1px solid rgba(102, 112, 133, 0.3);">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 3px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                                                    Inactif
+                                                </span>
+                                            }
+                                            @if (item.MustChangePassword)
+                                            {
+                                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%); color: #d97706; font-size: 10px; font-weight: 600; padding: 3px 8px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 3px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                                    MDP requis
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link p-0" type="button" id="dropdown-@item.Id" data-bs-toggle="dropdown" aria-expanded="false" title="Actions" style="border: none; color: #667085; transition: color 0.2s;" onmouseover="this.style.color='#3481c0';" onmouseout="this.style.color='#667085';">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" style="border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); border: 1px solid rgba(0, 0, 0, 0.05); padding: 8px; min-width: 180px;">
+                                        @if (item.EstSupprime)
+                                        {
+                                            <li>
+                                                <form asp-action="Restaurer" method="post" class="d-inline" style="display: contents;">
+                                                    <input type="hidden" name="id" value="@item.Id" />
+                                                    <button type="submit" class="dropdown-item" onclick="return confirm('Restaurer cet utilisateur ?');" title="Restaurer" style="border-radius: 8px; padding: 10px 14px; font-weight: 500; color: #d97706;">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                                                        Restaurer
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id" asp-controller="Utilisateurs" title="Voir les détails" style="border-radius: 8px; padding: 10px 14px; font-weight: 500; text-decoration: none;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                    Détails
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id" asp-controller="Utilisateurs" title="Modifier" style="border-radius: 8px; padding: 10px 14px; font-weight: 500; text-decoration: none;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                    Modifier
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.Id" asp-controller="Utilisateurs" title="Supprimer" style="border-radius: 8px; padding: 10px 14px; font-weight: 600; text-decoration: none;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                    Supprimer
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3" style="padding-top: 12px; border-top: 1px solid rgba(226, 232, 240, 0.8);">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    <small style="font-weight: 600; color: #667085; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Email</small>
+                                </div>
+                                <div style="color: #101828; font-size: 14px; font-weight: 500; word-break: break-word;">@item.Email</div>
+                            </div>
+
+                            <!-- Rôles -->
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                    <small style="font-weight: 600; color: #667085; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Rôles</small>
+                                </div>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @if (item.Roles.Any())
+                                    {
+                                        @foreach (var role in item.Roles)
+                                        {
+                                            <span class="badge rounded-pill" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.12) 0%, rgba(52, 129, 192, 0.06) 100%); color: #2563eb; font-size: 11px; font-weight: 600; padding: 5px 11px; border: 1px solid rgba(52, 129, 192, 0.25);">
+                                                @role
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted" style="font-size: 13px;">Aucun rôle</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Boutique active -->
+                            @if (!string.IsNullOrEmpty(item.BoutiqueActiveNom))
+                            {
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                        <small style="font-weight: 600; color: #667085; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Boutique active</small>
+                                    </div>
+                                    <div style="color: #101828; font-size: 14px; font-weight: 500;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 6px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                        @item.BoutiqueActiveNom
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Dernière connexion -->
+                            <div style="padding-top: 12px; border-top: 1px solid rgba(226, 232, 240, 0.8);">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    <small style="font-weight: 600; color: #667085; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Dernière connexion</small>
+                                </div>
+                                @if (item.DateDerniereConnexion.HasValue)
+                                {
+                                    <div style="color: #101828; font-size: 14px; font-weight: 500;">@item.DateDerniereConnexion.Value.ToLocalTime().ToString("dd/MM/yyyy")</div>
+                                    <div class="text-muted" style="font-size: 13px;">@item.DateDerniereConnexion.Value.ToLocalTime().ToString("HH:mm")</div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted" style="font-size: 14px;">Jamais connecté</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@section Scripts {
+<style>
+    /* S'assurer que le dropdown est visible */
+    .dropdown-menu {
+        z-index: 1050 !important;
+    }
+    
+    /* S'assurer que les liens sont cliquables */
+    .dropdown-item {
+        cursor: pointer;
+        display: block;
+        width: 100%;
+    }
+    
+    .dropdown-item:hover {
+        background-color: rgba(52, 129, 192, 0.08);
+    }
+</style>
+<script>
+    // S'assurer que les liens du dropdown fonctionnent correctement
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownItems = document.querySelectorAll('.dropdown-item[asp-action]');
+        
+        dropdownItems.forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                // S'assurer que le lien est bien cliqué
+                const href = this.getAttribute('href');
+                if (href && href !== '#' && href !== 'javascript:void(0)') {
+                    // Laisser Bootstrap gérer la navigation normalement
+                    window.location.href = href;
+                }
+            });
+        });
+    });
+</script>
+}
+
+
+
+

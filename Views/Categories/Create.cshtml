@@ -1,0 +1,105 @@
+@model G_StockVente.Domain.Models.Categorie
+@{
+    ViewData["Title"] = "Nouvelle catégorie";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Nouvelle catégorie</h1>
+        <p class="page-subtitle">Création d'une catégorie ou sous-catégorie</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row form-page-container">
+    <div class="col-12 col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <div style="font-weight: 600;">Informations de la catégorie</div>
+                <small class="text-muted">Détails de la catégorie</small>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" novalidate id="createForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label asp-for="Nom" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                Nom de la catégorie <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Nom" 
+                                   class="form-control" 
+                                   style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                   placeholder="Nom de la catégorie"
+                                   autofocus
+                                   required />
+                            <span asp-validation-for="Nom" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Description" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                Description
+                            </label>
+                            <textarea asp-for="Description" 
+                                      class="form-control" 
+                                      rows="3"
+                                      style="padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                      placeholder="Description de la catégorie (optionnel)"></textarea>
+                            <span asp-validation-for="Description" class="form-error"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="CategorieParenteId" class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                Catégorie parente
+                            </label>
+                            <select asp-for="CategorieParenteId" 
+                                    class="form-select" 
+                                    style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                                    asp-items="ViewBag.CategorieParenteId">
+                                <option value="">-- Catégorie principale (aucune parente) --</option>
+                            </select>
+                            <span asp-validation-for="CategorieParenteId" class="form-error"></span>
+                            <small class="text-muted" style="font-size: 13px; margin-top: var(--space-1); display: block;">
+                                Laissez vide pour créer une catégorie principale, ou sélectionnez une catégorie pour créer une sous-catégorie
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr style="margin: var(--space-6) 0; border-color: var(--color-border);" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="btn btn-outline-primary" style="height: 42px; font-weight: 600; min-width: 120px;">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submitButton" style="height: 42px; font-weight: 600; min-width: 120px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: var(--space-2);"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Créer la catégorie
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('createForm')?.addEventListener('submit', function(e) {
+            const button = document.getElementById('submitButton');
+            if (button && !button.disabled) {
+                LoadingState.show(button);
+            }
+        });
+    </script>
+}
+

@@ -1,0 +1,353 @@
+@{
+    ViewData["Title"] = "Organigramme de la boutique";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var boutique = ViewBag.Boutique as G_StockVente.Domain.Models.Boutique;
+    var managerBoutique = ViewBag.ManagerBoutique as List<G_StockVente.Controllers.OrganigrammeViewModel>;
+    var gestionnairesStock = ViewBag.GestionnairesStock as List<G_StockVente.Controllers.OrganigrammeViewModel>;
+    var caissiers = ViewBag.Caissiers as List<G_StockVente.Controllers.OrganigrammeViewModel>;
+    var autres = ViewBag.Autres as List<G_StockVente.Controllers.OrganigrammeViewModel>;
+    var totalUtilisateurs = (int)(ViewBag.TotalUtilisateurs ?? 0);
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Organigramme</h1>
+        <p class="page-subtitle">@boutique?.Nom</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Details" asp-route-id="@boutique?.Id" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">@boutique?.Nom</h5>
+                        <small class="text-muted">@totalUtilisateurs utilisateur(s)</small>
+                    </div>
+                    <div>
+                        @if (boutique?.EstActive == true)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactive</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Organigramme hiérarchique -->
+        <div class="organigramme-container" style="max-width: 1200px; margin: 0 auto;">
+            
+            <!-- Manager Boutique -->
+            @if (managerBoutique != null && managerBoutique.Any())
+            {
+                <div class="organigramme-level manager-level mb-4">
+                    <div class="text-center mb-3">
+                        <h6 class="text-uppercase text-muted small fw-bold">Manager Boutique</h6>
+                    </div>
+                    <div class="d-flex justify-content-center flex-wrap gap-3">
+                        @foreach (var user in managerBoutique)
+                        {
+                            <div class="organigramme-card manager-card" style="min-width: 280px;">
+                                <div class="card h-100 @(user.EstActif ? "border-success" : "border-secondary")" style="border-width: 2px;">
+                                    <div class="card-body text-center">
+                                        <div class="mb-3">
+                                            <div class="avatar-circle bg-primary text-white" style="width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 600; margin: 0 auto;">
+                                                @(user.Prenom?.FirstOrDefault().ToString().ToUpper() ?? "?")@(user.Nom?.FirstOrDefault().ToString().ToUpper() ?? "?")
+                                            </div>
+                                        </div>
+                                        <h6 class="mb-1 fw-bold">@user.Prenom @user.Nom</h6>
+                                        <small class="text-muted d-block mb-2">@user.Email</small>
+                                        <div class="mb-2">
+                                            @foreach (var role in user.Roles)
+                                            {
+                                                <span class="badge bg-primary me-1">@role</span>
+                                            }
+                                        </div>
+                                        <div class="d-flex justify-content-center gap-2 mb-2">
+                                            @if (user.EstActif)
+                                            {
+                                                <span class="badge bg-success">Actif</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Inactif</span>
+                                            }
+                                        </div>
+                                        @if (user.DateDerniereConnexion.HasValue)
+                                        {
+                                            <small class="text-muted d-block">
+                                                Dernière connexion : @user.DateDerniereConnexion.Value.ToString("dd/MM/yyyy HH:mm")
+                                            </small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted d-block">Jamais connecté</small>
+                                        }
+                                    </div>
+                                    <div class="card-footer bg-transparent border-0 text-center">
+                                        <a asp-controller="Utilisateurs" asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -2px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            Détails
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Connecteur vertical -->
+            @if (managerBoutique != null && managerBoutique.Any() && ((gestionnairesStock != null && gestionnairesStock.Any()) || (caissiers != null && caissiers.Any())))
+            {
+                <div class="text-center mb-3">
+                    <div class="connector-line" style="width: 2px; height: 40px; background: #e2e8f0; margin: 0 auto;"></div>
+                </div>
+            }
+
+            <!-- Gestionnaires Stock et Caissiers -->
+            <div class="row">
+                <!-- Gestionnaires Stock -->
+                @if (gestionnairesStock != null && gestionnairesStock.Any())
+                {
+                    <div class="col-md-6 mb-4">
+                        <div class="organigramme-level">
+                            <div class="text-center mb-3">
+                                <h6 class="text-uppercase text-muted small fw-bold">Gestionnaires Stock</h6>
+                            </div>
+                            <div class="d-flex flex-column gap-3">
+                                @foreach (var user in gestionnairesStock)
+                                {
+                                    <div class="organigramme-card">
+                                        <div class="card h-100 @(user.EstActif ? "border-info" : "border-secondary")" style="border-width: 2px;">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle bg-info text-white me-3" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; flex-shrink: 0;">
+                                                        @(user.Prenom?.FirstOrDefault().ToString().ToUpper() ?? "?")@(user.Nom?.FirstOrDefault().ToString().ToUpper() ?? "?")
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1 fw-bold">@user.Prenom @user.Nom</h6>
+                                                        <small class="text-muted d-block mb-1">@user.Email</small>
+                                                        <div class="mb-1">
+                                                            @foreach (var role in user.Roles)
+                                                            {
+                                                                <span class="badge bg-info me-1">@role</span>
+                                                            }
+                                                        </div>
+                                                        @if (user.EstActif)
+                                                        {
+                                                            <span class="badge bg-success">Actif</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary">Inactif</span>
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <a asp-controller="Utilisateurs" asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Caissiers -->
+                @if (caissiers != null && caissiers.Any())
+                {
+                    <div class="col-md-6 mb-4">
+                        <div class="organigramme-level">
+                            <div class="text-center mb-3">
+                                <h6 class="text-uppercase text-muted small fw-bold">Caissiers</h6>
+                            </div>
+                            <div class="d-flex flex-column gap-3">
+                                @foreach (var user in caissiers)
+                                {
+                                    <div class="organigramme-card">
+                                        <div class="card h-100 @(user.EstActif ? "border-warning" : "border-secondary")" style="border-width: 2px;">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle bg-warning text-white me-3" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; flex-shrink: 0;">
+                                                        @(user.Prenom?.FirstOrDefault().ToString().ToUpper() ?? "?")@(user.Nom?.FirstOrDefault().ToString().ToUpper() ?? "?")
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1 fw-bold">@user.Prenom @user.Nom</h6>
+                                                        <small class="text-muted d-block mb-1">@user.Email</small>
+                                                        <div class="mb-1">
+                                                            @foreach (var role in user.Roles)
+                                                            {
+                                                                <span class="badge bg-warning text-dark me-1">@role</span>
+                                                            }
+                                                        </div>
+                                                        @if (user.EstActif)
+                                                        {
+                                                            <span class="badge bg-success">Actif</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary">Inactif</span>
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <a asp-controller="Utilisateurs" asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Autres utilisateurs (sans rôle spécifique) -->
+            @if (autres != null && autres.Any())
+            {
+                <div class="mt-4">
+                    <div class="text-center mb-3">
+                        <div class="connector-line" style="width: 2px; height: 40px; background: #e2e8f0; margin: 0 auto;"></div>
+                    </div>
+                    <div class="organigramme-level">
+                        <div class="text-center mb-3">
+                            <h6 class="text-uppercase text-muted small fw-bold">Autres utilisateurs</h6>
+                        </div>
+                        <div class="row g-3">
+                            @foreach (var user in autres)
+                            {
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="organigramme-card">
+                                        <div class="card h-100 border-secondary" style="border-width: 2px;">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle bg-secondary text-white me-3" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; flex-shrink: 0;">
+                                                        @(user.Prenom?.FirstOrDefault().ToString().ToUpper() ?? "?")@(user.Nom?.FirstOrDefault().ToString().ToUpper() ?? "?")
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1 fw-bold">@user.Prenom @user.Nom</h6>
+                                                        <small class="text-muted d-block mb-1">@user.Email</small>
+                                                        @if (user.Roles.Any())
+                                                        {
+                                                            <div class="mb-1">
+                                                                @foreach (var role in user.Roles)
+                                                                {
+                                                                    <span class="badge bg-secondary me-1">@role</span>
+                                                                }
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary mb-1">Aucun rôle</span>
+                                                        }
+                                                        @if (user.EstActif)
+                                                        {
+                                                            <span class="badge bg-success">Actif</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary">Inactif</span>
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <a asp-controller="Utilisateurs" asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-secondary">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Message si aucun utilisateur -->
+            @if (totalUtilisateurs == 0)
+            {
+                <div class="text-center py-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted mb-3">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <h5 class="text-muted">Aucun utilisateur assigné à cette boutique</h5>
+                    <p class="text-muted">Les utilisateurs seront affichés ici une fois qu'ils seront assignés à cette boutique.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .organigramme-container {
+            padding: var(--space-6) 0;
+        }
+
+        .organigramme-level {
+            margin-bottom: var(--space-6);
+        }
+
+        .organigramme-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .organigramme-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .manager-card {
+            position: relative;
+        }
+
+        .manager-card::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 20px;
+            background: #e2e8f0;
+        }
+
+        .connector-line {
+            width: 2px;
+            background: #e2e8f0;
+            margin: 0 auto;
+        }
+
+        .avatar-circle {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+}
+

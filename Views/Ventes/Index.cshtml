@@ -1,0 +1,227 @@
+@model IEnumerable<G_StockVente.Domain.Models.Vente>
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Liste des ventes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Ventes</h1>
+        <p class="page-subtitle">Historique, filtres par période, annulation</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Caisse" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nouvelle vente
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-12 col-md-6 col-lg-4">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Date début
+                </label>
+                <input type="date" 
+                       name="dateDebut" 
+                       value="@ViewBag.DateDebut?.ToString("yyyy-MM-dd")" 
+                       class="form-control" 
+                       style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                       aria-label="Date de début" />
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Date fin
+                </label>
+                <input type="date" 
+                       name="dateFin" 
+                       value="@ViewBag.DateFin?.ToString("yyyy-MM-dd")" 
+                       class="form-control" 
+                       style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                       aria-label="Date de fin" />
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <button type="submit" class="btn btn-primary w-100" style="height: 42px; font-weight: 600;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: var(--space-2);"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                    Appliquer les filtres
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Sales List -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <div style="font-weight: 600;">Historique des ventes</div>
+            @if (Model.Any())
+            {
+                <small class="text-muted">@Model.Count() vente(s)</small>
+            }
+        </div>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        @if (!Model.Any())
+        {
+            <div class="empty-state" style="margin: var(--space-8);">
+                <div class="empty-state-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div class="empty-state-title">Aucune vente</div>
+                <div class="empty-state-message">Aucune vente ne correspond aux critères sélectionnés.</div>
+                <div class="empty-state-action">
+                    <a asp-action="Caisse" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+                        Créer une vente
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Numéro</th>
+                            <th>Date & Heure</th>
+                            <th>Boutique</th>
+                            <th>Caissier</th>
+                            <th class="text-end">Montant TTC</th>
+                            <th>Paiement</th>
+                            <th style="width: 120px;">Statut</th>
+                            <th style="width: 100px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong style="font-size: 14px; color: var(--color-primary);">@item.NumeroVente</strong>
+                                </td>
+                                <td>
+                                    <div style="font-size: 13px; font-weight: 600;">@item.DateVente.ToString("dd/MM/yyyy")</div>
+                                    <small class="text-muted">@item.DateVente.ToString("HH:mm")</small>
+                                </td>
+                                <td>
+                                    <span class="badge badge-secondary">@item.Boutique.Nom</span>
+                                </td>
+                                <td>
+                                    <div style="font-size: 13px;">@($"{item.Utilisateur.Prenom} {item.Utilisateur.Nom}")</div>
+                                </td>
+                                <td class="text-end">
+                                    <strong style="font-size: 16px; color: var(--color-success);">@item.MontantTTC.ToString("N2", new System.Globalization.CultureInfo("fr-FR")) €</strong>
+                                </td>
+                                <td>
+                                    @switch (item.ModePaiement.ToString())
+                                    {
+                                        case "Especes":
+                                            <span class="badge badge-info">💵 Espèces</span>
+                                            break;
+                                        case "MobileMoney":
+                                            <span class="badge badge-info">📱 Mobile Money</span>
+                                            break;
+                                        case "Carte":
+                                            <span class="badge badge-info">💳 Carte</span>
+                                            break;
+                                        default:
+                                            <span class="badge badge-secondary">@item.ModePaiement</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @switch (item.Statut)
+                                    {
+                                        case StatutVente.Validee:
+                                            <span class="badge badge-success">
+                                                <span class="status-indicator status-indicator--success"></span>
+                                                Validée
+                                            </span>
+                                            break;
+                                        case StatutVente.Annulee:
+                                            <span class="badge badge-danger">
+                                                <span class="status-indicator status-indicator--danger"></span>
+                                                Annulée
+                                            </span>
+                                            break;
+                                        default:
+                                            <span class="badge badge-warning">@item.Statut</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" title="Actions">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id" title="Détails">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            </a></li>
+                                            @if (item.Statut == StatutVente.Validee && (User.IsInRole("AdminReseau") || User.IsInRole("ManagerBoutique")))
+                                            {
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="annulerVente('@item.Id'); return false;" title="Annuler">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </a></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<form id="antiForgeryForm" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script>
+        async function annulerVente(venteId) {
+            const confirmed = await Modal.confirm({
+                title: 'Annuler la vente',
+                message: 'Êtes-vous sûr de vouloir annuler cette vente ? Cette action est irréversible.',
+                confirmText: 'Oui, annuler',
+                cancelText: 'Non',
+                danger: true
+            });
+            
+            if (!confirmed) return;
+
+            const token = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]')?.value || '';
+            
+            try {
+                const response = await fetch('/Ventes/Annuler/' + venteId, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    Toast.success('Vente annulée avec succès.');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    Toast.error(data.message || 'Impossible d\'annuler la vente.');
+                }
+            } catch (error) {
+                Toast.error('Erreur: ' + error.message);
+            }
+        }
+    </script>
+}

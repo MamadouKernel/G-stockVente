@@ -1,0 +1,175 @@
+@model IEnumerable<G_StockVente.Domain.Models.PaiementIntegre>
+@using G_StockVente.Domain.Models
+@{
+    ViewData["Title"] = "Paiements intégrés";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Paiements intégrés</h1>
+        <p class="page-subtitle">Historique des paiements Mobile Money et Carte bancaire</p>
+    </div>
+</div>
+
+<!-- Filtres -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-12 col-md-3">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    Date début
+                </label>
+                <input type="date" 
+                       name="dateDebut" 
+                       value="@(ViewBag.DateDebut?.ToString("yyyy-MM-dd"))"
+                       class="form-control" 
+                       style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;" />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    Date fin
+                </label>
+                <input type="date" 
+                       name="dateFin" 
+                       value="@(ViewBag.DateFin?.ToString("yyyy-MM-dd"))"
+                       class="form-control" 
+                       style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;" />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    Boutique
+                </label>
+                <select name="boutiqueId" 
+                        class="form-select" 
+                        style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;">
+                    <option value="">Toutes</option>
+                    @if (ViewBag.Boutiques != null)
+                    {
+                        @foreach (var b in (List<dynamic>)ViewBag.Boutiques)
+                        {
+                            <option value="@b.Id" selected="@(ViewBag.BoutiqueId?.ToString() == b.Id.ToString())">@b.Nom</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                    Statut
+                </label>
+                <select name="statut" 
+                        class="form-select" 
+                        style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;">
+                    <option value="">Tous</option>
+                    <option value="1" selected="@(ViewBag.Statut?.ToString() == "EnAttente")">En attente</option>
+                    <option value="2" selected="@(ViewBag.Statut?.ToString() == "Valide")">Validé</option>
+                    <option value="3" selected="@(ViewBag.Statut?.ToString() == "Echec")">Échec</option>
+                    <option value="4" selected="@(ViewBag.Statut?.ToString() == "Rembourse")">Remboursé</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-12">
+                <button type="submit" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+                    Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Liste -->
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.4;"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <h3 class="empty-state__title">Aucun paiement intégré</h3>
+                <p class="empty-state__text">Aucun paiement Mobile Money ou Carte bancaire enregistré pour cette période.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Vente</th>
+                            <th>Boutique</th>
+                            <th>Montant</th>
+                            <th>Référence</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var paiement in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <small>@paiement.DateCreation.ToString("dd/MM/yyyy HH:mm")</small>
+                                </td>
+                                <td>
+                                    @if (paiement.Type == TypePaiementIntegre.MobileMoney)
+                                    {
+                                        <span class="badge bg-info">📱 Mobile Money</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary">💳 Carte</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-controller="Ventes" asp-action="Details" asp-route-id="@paiement.VenteId" class="text-decoration-none">
+                                        @paiement.Vente.NumeroVente
+                                    </a>
+                                </td>
+                                <td>
+                                    <small>@(paiement.Vente.Boutique?.Nom ?? "N/A")</small>
+                                </td>
+                                <td>
+                                    <strong>@paiement.Montant.ToString("N2", new System.Globalization.CultureInfo("fr-FR")) €</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@(paiement.ReferenceExterne ?? "—")</small>
+                                </td>
+                                <td>
+                                    @{
+                                        var statutClass = paiement.Statut switch
+                                        {
+                                            StatutPaiement.EnAttente => "badge-warning",
+                                            StatutPaiement.Valide => "badge-success",
+                                            StatutPaiement.Echec => "badge-danger",
+                                            StatutPaiement.Rembourse => "badge-secondary",
+                                            _ => "badge-secondary"
+                                        };
+                                    }
+                                    <span class="badge @statutClass">@paiement.Statut</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@paiement.Id" class="btn btn-outline-primary" title="Détails">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        </a>
+                                        @if (paiement.Statut == StatutPaiement.Valide)
+                                        {
+                                            <form asp-action="Rembourser" asp-route-id="@paiement.Id" method="post" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir rembourser ce paiement ?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-warning" title="Rembourser">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

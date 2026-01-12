@@ -1,0 +1,314 @@
+@{
+    ViewData["Title"] = "Nouveau Transfert";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Nouveau Transfert de Stock</h1>
+        <p class="page-subtitle">Créer un transfert entre dépôts</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Retour
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form id="transfertForm" method="post" asp-action="Create">
+            <div class="row g-4">
+                <!-- Dépôt source et destination -->
+                <div class="col-12">
+                    <h5 class="mb-3" style="color: var(--color-text-strong); font-weight: 600; font-size: 15px;">Dépôts</h5>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                        Dépôt source <span class="text-danger">*</span>
+                    </label>
+                    <select name="depotSourceId" 
+                            id="depotSourceId"
+                            class="form-select" 
+                            style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                            required>
+                        <option value="">-- Sélectionner un dépôt source --</option>
+                        @if (ViewBag.DepotSourceId != null)
+                        {
+                            @foreach (var item in (SelectList)ViewBag.DepotSourceId)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                        Dépôt destination <span class="text-danger">*</span>
+                    </label>
+                    <select name="depotDestinationId" 
+                            id="depotDestinationId"
+                            class="form-select" 
+                            style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;"
+                            required>
+                        <option value="">-- Sélectionner un dépôt destination --</option>
+                        @if (ViewBag.DepotDestinationId != null)
+                        {
+                            @foreach (var item in (SelectList)ViewBag.DepotDestinationId)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Transfert inter-boutiques (Admin uniquement) -->
+                @if (ViewBag.BoutiqueSourceId != null)
+                {
+                    <div class="col-12">
+                        <hr class="my-4" />
+                        <h5 class="mb-3" style="color: var(--color-text-strong); font-weight: 600; font-size: 15px;">Transfert inter-boutiques (optionnel)</h5>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                            Boutique source
+                        </label>
+                        <select name="boutiqueSourceId" 
+                                class="form-select" 
+                                style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;">
+                            <option value="">-- Automatique (selon dépôt) --</option>
+                            @foreach (var item in (SelectList)ViewBag.BoutiqueSourceId)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                            Boutique destination
+                        </label>
+                        <select name="boutiqueDestinationId" 
+                                class="form-select" 
+                                style="height: 42px; padding: var(--space-3) var(--space-4); font-size: 14px;">
+                            <option value="">-- Automatique (selon dépôt) --</option>
+                            @foreach (var item in (SelectList)ViewBag.BoutiqueDestinationId)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                <!-- Produits -->
+                <div class="col-12">
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 style="color: var(--color-text-strong); font-weight: 600; font-size: 15px; margin: 0;">Produits à transférer</h5>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnAddProduct">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Ajouter un produit
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table" id="produitsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%;">Produit</th>
+                                    <th style="width: 20%;">SKU / Code-barres</th>
+                                    <th style="width: 25%;">Quantité</th>
+                                    <th style="width: 15%;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="produitsTableBody">
+                                <!-- Produits seront ajoutés ici dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="col-12">
+                    <label class="form-label" style="font-weight: 600; margin-bottom: var(--space-2);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Notes (optionnel)
+                    </label>
+                    <textarea name="notes" 
+                              class="form-control" 
+                              rows="3"
+                              style="padding: var(--space-3) var(--space-4); font-size: 14px;"
+                              placeholder="Commentaires ou remarques sur ce transfert..."></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div class="col-12">
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-end gap-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Créer le transfert
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Liste des produits disponibles
+        const produits = @Html.Raw(Json.Serialize(ViewBag.ProduitsBoutique));
+        let produitCounter = 0;
+        const produitsSelectionnes = new Set();
+
+        // Ajouter un produit au tableau
+        document.getElementById('btnAddProduct').addEventListener('click', function() {
+            if (produits.length === 0) {
+                alert('Aucun produit disponible.');
+                return;
+            }
+
+            const tbody = document.getElementById('produitsTableBody');
+            const row = document.createElement('tr');
+            row.id = 'produitRow_' + produitCounter;
+
+            let optionsHtml = '<option value="">-- Sélectionner un produit --</option>';
+            produits.forEach(function(p) {
+                if (!produitsSelectionnes.has(p.id)) {
+                    optionsHtml += `<option value="${p.id}" data-sku="${p.sku || ''}" data-codebarres="${p.codeBarres || ''}">${p.produit.nom}</option>`;
+                }
+            });
+
+            row.innerHTML = `
+                <td>
+                    <select name="produitBoutiqueIds" 
+                            class="form-select produit-select" 
+                            style="height: 38px; font-size: 14px;"
+                            required
+                            data-counter="${produitCounter}">
+                        ${optionsHtml}
+                    </select>
+                </td>
+                <td>
+                    <input type="text" 
+                           class="form-control form-control-sm produit-info" 
+                           readonly 
+                           style="background: var(--color-bg-subtle); font-size: 13px;"
+                           placeholder="—" />
+                </td>
+                <td>
+                    <input type="number" 
+                           name="quantites"
+                           class="form-control" 
+                           min="1" 
+                           value="1"
+                           required
+                           style="height: 38px; font-size: 14px;" />
+                </td>
+                <td>
+                    <button type="button" 
+                            class="btn btn-sm btn-outline-danger btn-remove" 
+                            data-counter="${produitCounter}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+
+            // Gérer la sélection du produit
+            const select = row.querySelector('.produit-select');
+            select.addEventListener('change', function() {
+                const option = this.options[this.selectedIndex];
+                const infoInput = row.querySelector('.produit-info');
+                const sku = option.getAttribute('data-sku') || '';
+                const codebarres = option.getAttribute('data-codebarres') || '';
+                
+                if (option.value) {
+                    produitsSelectionnes.add(option.value);
+                    const infos = [];
+                    if (sku) infos.push('SKU: ' + sku);
+                    if (codebarres) infos.push('Code: ' + codebarres);
+                    infoInput.value = infos.join(' | ') || '—';
+                    
+                    // Mettre à jour les autres selects pour exclure ce produit
+                    updateOtherSelects();
+                } else {
+                    produitsSelectionnes.delete(option.value);
+                    infoInput.value = '—';
+                }
+            });
+
+            // Gérer la suppression
+            row.querySelector('.btn-remove').addEventListener('click', function() {
+                const select = row.querySelector('.produit-select');
+                if (select.value) {
+                    produitsSelectionnes.delete(select.value);
+                }
+                row.remove();
+                updateOtherSelects();
+            });
+
+            produitCounter++;
+        });
+
+        // Mettre à jour les autres selects pour exclure les produits déjà sélectionnés
+        function updateOtherSelects() {
+            document.querySelectorAll('.produit-select').forEach(function(select) {
+                const currentValue = select.value;
+                Array.from(select.options).forEach(function(option) {
+                    if (option.value && option.value !== currentValue) {
+                        option.disabled = produitsSelectionnes.has(option.value);
+                    }
+                });
+            });
+        }
+
+        // Validation du formulaire
+        document.getElementById('transfertForm').addEventListener('submit', function(e) {
+            const depotSource = document.getElementById('depotSourceId').value;
+            const depotDest = document.getElementById('depotDestinationId').value;
+            
+            if (depotSource === depotDest) {
+                e.preventDefault();
+                alert('Le dépôt source et le dépôt destination doivent être différents.');
+                return false;
+            }
+
+            const produitsRows = document.querySelectorAll('#produitsTableBody tr');
+            if (produitsRows.length === 0) {
+                e.preventDefault();
+                alert('Veuillez ajouter au moins un produit au transfert.');
+                return false;
+            }
+
+            // Vérifier que tous les produits sont sélectionnés
+            let allValid = true;
+            produitsRows.forEach(function(row) {
+                const select = row.querySelector('.produit-select');
+                const quantite = row.querySelector('input[name="quantites"]');
+                if (!select.value || !quantite.value || parseInt(quantite.value) <= 0) {
+                    allValid = false;
+                }
+            });
+
+            if (!allValid) {
+                e.preventDefault();
+                alert('Veuillez remplir tous les champs produits correctement.');
+                return false;
+            }
+        });
+    </script>
+}
+

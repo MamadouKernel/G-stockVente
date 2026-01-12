@@ -42,11 +42,11 @@ public class DelegationsController : Controller
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             query = query.Where(d =>
-                (d.UtilisateurDelegant != null && d.UtilisateurDelegant.Nom.Contains(searchTerm)) ||
-                (d.UtilisateurDelegant != null && d.UtilisateurDelegant.Prenom.Contains(searchTerm)) ||
+                (d.UtilisateurDelegant != null && d.UtilisateurDelegant.Nom != null && d.UtilisateurDelegant.Nom.Contains(searchTerm)) ||
+                (d.UtilisateurDelegant != null && d.UtilisateurDelegant.Prenom != null && d.UtilisateurDelegant.Prenom.Contains(searchTerm)) ||
                 (d.UtilisateurDelegant != null && d.UtilisateurDelegant.Email != null && d.UtilisateurDelegant.Email.Contains(searchTerm)) ||
-                (d.UtilisateurBeneficiaire != null && d.UtilisateurBeneficiaire.Nom.Contains(searchTerm)) ||
-                (d.UtilisateurBeneficiaire != null && d.UtilisateurBeneficiaire.Prenom.Contains(searchTerm)) ||
+                (d.UtilisateurBeneficiaire != null && d.UtilisateurBeneficiaire.Nom != null && d.UtilisateurBeneficiaire.Nom.Contains(searchTerm)) ||
+                (d.UtilisateurBeneficiaire != null && d.UtilisateurBeneficiaire.Prenom != null && d.UtilisateurBeneficiaire.Prenom.Contains(searchTerm)) ||
                 (d.UtilisateurBeneficiaire != null && d.UtilisateurBeneficiaire.Email != null && d.UtilisateurBeneficiaire.Email.Contains(searchTerm)) ||
                 d.RoleDelege.Contains(searchTerm));
         }

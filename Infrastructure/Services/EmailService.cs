@@ -170,11 +170,12 @@ public class EmailService : IEmailService
 
             // Ajouter la pièce jointe
             var attachment = new Attachment(attachmentPath, MediaTypeNames.Application.Octet);
-            if (attachment.ContentDisposition != null)
+            var contentDisposition = attachment.ContentDisposition;
+            if (contentDisposition != null)
             {
-                attachment.ContentDisposition.FileName = attachmentName;
-                attachment.ContentDisposition.CreationDate = File.GetCreationTime(attachmentPath);
-                attachment.ContentDisposition.ModificationDate = File.GetLastWriteTime(attachmentPath);
+                contentDisposition.FileName = attachmentName;
+                contentDisposition.CreationDate = File.GetCreationTime(attachmentPath);
+                contentDisposition.ModificationDate = File.GetLastWriteTime(attachmentPath);
             }
             message.Attachments.Add(attachment);
 

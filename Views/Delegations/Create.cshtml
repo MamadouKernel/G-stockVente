@@ -43,9 +43,12 @@
                             </label>
                             <select asp-for="UtilisateurDelegantId" class="form-select" required>
                                 <option value="">Sélectionner un utilisateur...</option>
-                                @foreach (var item in ViewBag.Utilisateurs as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                @if (ViewBag.Utilisateurs is List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> utilisateurs)
                                 {
-                                    <option value="@item.Value">@item.Text</option>
+                                    @foreach (var item in utilisateurs)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
                                 }
                             </select>
                             <span asp-validation-for="UtilisateurDelegantId" class="form-error"></span>
@@ -58,9 +61,12 @@
                             </label>
                             <select asp-for="UtilisateurBeneficiaireId" class="form-select" required>
                                 <option value="">Sélectionner un utilisateur...</option>
-                                @foreach (var item in ViewBag.Utilisateurs as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                @if (ViewBag.Utilisateurs is List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> utilisateurs2)
                                 {
-                                    <option value="@item.Value">@item.Text</option>
+                                    @foreach (var item in utilisateurs2)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
                                 }
                             </select>
                             <span asp-validation-for="UtilisateurBeneficiaireId" class="form-error"></span>
@@ -73,9 +79,12 @@
                             </label>
                             <select asp-for="RoleDelege" class="form-select" required>
                                 <option value="">Sélectionner un rôle...</option>
-                                @foreach (var item in ViewBag.Roles as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                                @if (ViewBag.Roles is List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> roles)
                                 {
-                                    <option value="@item.Value">@item.Text</option>
+                                    @foreach (var item in roles)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
                                 }
                             </select>
                             <span asp-validation-for="RoleDelege" class="form-error"></span>

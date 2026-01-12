@@ -64,8 +64,8 @@ public class UtilisateursController : Controller
             query = query.Where(u =>
                 u.Nom.Contains(searchTerm) ||
                 u.Prenom.Contains(searchTerm) ||
-                u.Email.Contains(searchTerm) ||
-                u.UserName.Contains(searchTerm));
+                (u.Email != null && u.Email.Contains(searchTerm)) ||
+                (u.UserName != null && u.UserName.Contains(searchTerm)));
         }
 
         // Filtre par rôle
@@ -98,8 +98,8 @@ public class UtilisateursController : Controller
                 Id = user.Id,
                 Prenom = user.Prenom,
                 Nom = user.Nom,
-                Email = user.Email,
-                UserName = user.UserName,
+                Email = user.Email ?? string.Empty,
+                UserName = user.UserName ?? string.Empty,
                 EstActif = user.EstActif,
                 EstSupprime = user.EstSupprime,
                 DateSuppression = user.DateSuppression,
@@ -153,13 +153,13 @@ public class UtilisateursController : Controller
             Id = user.Id,
             Prenom = user.Prenom,
             Nom = user.Nom,
-            Email = user.Email,
-            UserName = user.UserName,
+            Email = user.Email ?? string.Empty,
+            UserName = user.UserName ?? string.Empty,
             EstActif = user.EstActif,
             BoutiqueActiveId = user.BoutiqueActiveId,
             BoutiqueActiveNom = user.BoutiqueActive?.Nom,
             Roles = roles.ToList(),
-            AllRoles = allRoles.Select(r => r.Name).ToList(),
+            AllRoles = allRoles.Where(r => r.Name != null).Select(r => r.Name!).ToList(),
             DateCreation = user.DateCreation,
             DateDerniereConnexion = user.DateDerniereConnexion,
             MustChangePassword = user.MustChangePassword
@@ -340,7 +340,7 @@ public class UtilisateursController : Controller
             Id = user.Id,
             Prenom = user.Prenom,
             Nom = user.Nom,
-            Email = user.Email,
+            Email = user.Email ?? string.Empty,
             BoutiqueId = user.BoutiqueActiveId,
             EstActif = user.EstActif,
             MustChangePassword = user.MustChangePassword,
@@ -511,8 +511,8 @@ public class UtilisateursController : Controller
             Id = user.Id,
             Prenom = user.Prenom,
             Nom = user.Nom,
-            Email = user.Email,
-            UserName = user.UserName,
+            Email = user.Email ?? string.Empty,
+            UserName = user.UserName ?? string.Empty,
             EstActif = user.EstActif,
             BoutiqueActiveId = user.BoutiqueActiveId,
             BoutiqueActiveNom = user.BoutiqueActive?.Nom,

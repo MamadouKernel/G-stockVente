@@ -188,7 +188,7 @@ public class BoutiquesController : Controller
                 Id = user.Id,
                 Prenom = user.Prenom,
                 Nom = user.Nom,
-                Email = user.Email,
+                Email = user.Email ?? string.Empty,
                 Roles = roles.ToList(),
                 EstActif = user.EstActif,
                 DateCreation = user.DateCreation,

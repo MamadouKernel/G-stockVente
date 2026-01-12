@@ -1,1 +1,635 @@
--NoNewline
+@{
+    ViewData["Title"] = "Aide";
+}
+
+<div class="page-header">
+    <div>
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="aide-icon-wrapper" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3481c0 0%, #2563eb 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(52, 129, 192, 0.3);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div>
+                <h1 class="page-title mb-1">Centre d'aide</h1>
+                <p class="page-subtitle mb-0">Trouvez rapidement les réponses à vos questions</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Sidebar Navigation -->
+    <div class="col-12 col-lg-3">
+        <div class="card surface" style="position: sticky; top: 20px;">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.05) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 1px solid rgba(52, 129, 192, 0.15);">
+                <h3 class="card-title mb-0 d-flex align-items-center gap-2" style="font-size: 15px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <span style="color: #3481c0; font-weight: 600;">Navigation</span>
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="#guide-utilisateur" class="list-group-item list-group-item-action d-flex align-items-center gap-2" style="border: none; padding: 12px 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        <span>Guide utilisateur</span>
+                    </a>
+                    <a href="#comment-utiliser" class="list-group-item list-group-item-action d-flex align-items-center gap-2" style="border: none; padding: 12px 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span>Comment utiliser</span>
+                    </a>
+                    <a href="#definitions" class="list-group-item list-group-item-action d-flex align-items-center gap-2" style="border: none; padding: 12px 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        <span>Définitions</span>
+                    </a>
+                    @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true || ViewBag.IsGestionnaireStock == true)
+                    {
+                        <a href="#comment-creer" class="list-group-item list-group-item-action d-flex align-items-center gap-2" style="border: none; padding: 12px 16px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>Comment créer...</span>
+                        </a>
+                    }
+                    <a href="#comment-fonctionne" class="list-group-item list-group-item-action d-flex align-items-center gap-2" style="border: none; padding: 12px 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        <span>Comment ça fonctionne...</span>
+                    </a>
+                    <a href="#faq" class="list-group-item list-group-item-action d-flex align-items-center gap-2" style="border: none; padding: 12px 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <span>FAQ</span>
+                    </a>
+                    <a href="#documentation" class="list-group-item list-group-item-action d-flex align-items-center gap-2" style="border: none; padding: 12px 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        <span>Documentation</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-12 col-lg-9">
+        <!-- Guide Utilisateur par Rôle -->
+        <div class="card surface mb-4" id="guide-utilisateur">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.08) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 2px solid rgba(52, 129, 192, 0.2);">
+                <h2 class="card-title mb-0 d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    <span style="color: #3481c0;">Guide utilisateur</span>
+                </h2>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.IsAdminReseau == true)
+                {
+                    <div class="alert alert-info mb-0">
+                        <strong>Guide Admin Réseau</strong>
+                        <p class="mb-0 mt-2">En tant qu'administrateur réseau, vous avez accès à toutes les fonctionnalités de l'application : gestion des boutiques, utilisateurs, produits, stocks, ventes, achats, inventaires, transferts, rapports et sécurité avancée.</p>
+                    </div>
+                }
+                else if (ViewBag.IsManagerBoutique == true)
+                {
+                    <div class="alert alert-info mb-0">
+                        <strong>Guide Manager Boutique</strong>
+                        <p class="mb-0 mt-2">En tant que manager boutique, vous gérez votre boutique : produits, catégories, utilisateurs de votre boutique, dépôts, fournisseurs, achats, inventaires, transferts, rapports et point de vente.</p>
+                    </div>
+                }
+                else if (ViewBag.IsCaissier == true)
+                {
+                    <div class="alert alert-info mb-0">
+                        <strong>Guide Caissier</strong>
+                        <p class="mb-0 mt-2">En tant que caissier, vous utilisez principalement le point de vente (caisse) pour enregistrer les ventes et gérer les paiements.</p>
+                    </div>
+                }
+                else if (ViewBag.IsGestionnaireStock == true)
+                {
+                    <div class="alert alert-info mb-0">
+                        <strong>Guide Gestionnaire Stock</strong>
+                        <p class="mb-0 mt-2">En tant que gestionnaire stock, vous gérez les stocks, les achats, les réceptions, les inventaires et les transferts entre dépôts.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Comment utiliser l'application -->
+        <div class="card surface mb-4" id="comment-utiliser">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.08) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 2px solid rgba(52, 129, 192, 0.2);">
+                <h2 class="card-title mb-0 d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span style="color: #3481c0;">Comment utiliser l'application</span>
+                </h2>
+            </div>
+            <div class="card-body">
+                <p>G-StockVente est une application de gestion de stock et de vente multi-boutiques. Voici les étapes de base :</p>
+                <ol>
+                    <li><strong>Connexion</strong> : Connectez-vous avec vos identifiants</li>
+                    <li><strong>Sélection de boutique</strong> : Si vous gérez plusieurs boutiques, sélectionnez celle sur laquelle vous souhaitez travailler</li>
+                    <li><strong>Navigation</strong> : Utilisez le menu latéral pour accéder aux différentes fonctionnalités</li>
+                    <li><strong>Actions</strong> : Effectuez vos opérations (ventes, achats, inventaires, etc.)</li>
+                    <li><strong>Rapports</strong> : Consultez les rapports pour suivre votre activité</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Définitions des concepts -->
+        <div class="card surface mb-4" id="definitions">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.08) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 2px solid rgba(52, 129, 192, 0.2);">
+                <h2 class="card-title mb-0 d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    <span style="color: #3481c0;">Définitions des concepts</span>
+                </h2>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-3"><strong>Boutique</strong> : Un point de vente physique ou virtuel dans votre réseau. Chaque boutique peut avoir ses propres produits, stocks et utilisateurs.</li>
+                    <li class="mb-3"><strong>Dépôt</strong> : Un emplacement de stockage physique où sont entreposés les produits. Une boutique peut avoir plusieurs dépôts.</li>
+                    <li class="mb-3"><strong>Produit</strong> : Un article que vous vendez. Chaque produit a un code-barres, un SKU, un nom, une catégorie et un prix.</li>
+                    <li class="mb-3"><strong>Stock</strong> : La quantité disponible d'un produit dans un dépôt spécifique.</li>
+                    <li class="mb-3"><strong>Vente</strong> : Une transaction de vente enregistrée au point de vente (caisse).</li>
+                    <li class="mb-3"><strong>Achat</strong> : Une commande d'achat de produits auprès d'un fournisseur.</li>
+                    <li class="mb-3"><strong>Inventaire</strong> : Un comptage physique des stocks pour vérifier les quantités réelles.</li>
+                    <li class="mb-3"><strong>Transfert</strong> : Un mouvement de produits d'un dépôt vers un autre.</li>
+                    <li class="mb-3"><strong>Fournisseur</strong> : Une entreprise ou personne qui vous fournit des produits.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Comment créer... ? -->
+        @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true || ViewBag.IsGestionnaireStock == true)
+        {
+            <div class="card surface mb-4" id="comment-creer">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.08) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 2px solid rgba(52, 129, 192, 0.2);">
+                    <h2 class="card-title mb-0 d-flex align-items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span style="color: #3481c0;">Comment créer... ?</span>
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="accordionCreer">
+                        @if (ViewBag.IsAdminReseau == true)
+                        {
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBoutique">
+                                        Création d'une boutique
+                                    </button>
+                                </h2>
+                                <div id="collapseBoutique" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Boutiques</strong> → <strong>Créer</strong></li>
+                                            <li>Remplissez les informations : nom, adresse, téléphone, email</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true || ViewBag.IsGestionnaireStock == true)
+                        {
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProduit">
+                                        Création d'un produit
+                                    </button>
+                                </h2>
+                                <div id="collapseProduit" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Produits</strong> → <strong>Créer</strong></li>
+                                            <li>Remplissez : nom, code-barres, SKU, catégorie, prix</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true)
+                        {
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategorie">
+                                        Création d'une catégorie
+                                    </button>
+                                </h2>
+                                <div id="collapseCategorie" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Catégories</strong> → <strong>Créer</strong></li>
+                                            <li>Entrez le nom de la catégorie</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUtilisateur">
+                                        Création d'un utilisateur
+                                    </button>
+                                </h2>
+                                <div id="collapseUtilisateur" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Utilisateurs</strong> → <strong>Créer</strong></li>
+                                            <li>Remplissez : nom, email, mot de passe, boutique, rôles</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDepot">
+                                        Création d'un dépôt
+                                    </button>
+                                </h2>
+                                <div id="collapseDepot" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Dépôts</strong> → <strong>Créer</strong></li>
+                                            <li>Remplissez : nom, boutique, adresse</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFournisseur">
+                                        Création d'un fournisseur
+                                    </button>
+                                </h2>
+                                <div id="collapseFournisseur" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Fournisseurs</strong> → <strong>Créer</strong></li>
+                                            <li>Remplissez : nom, contact, adresse</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true || ViewBag.IsGestionnaireStock == true)
+                        {
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAchat">
+                                        Création d'un achat
+                                    </button>
+                                </h2>
+                                <div id="collapseAchat" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Achats</strong> → <strong>Créer</strong></li>
+                                            <li>Sélectionnez le fournisseur et ajoutez les produits</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInventaire">
+                                        Création d'un inventaire
+                                    </button>
+                                </h2>
+                                <div id="collapseInventaire" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Inventaires</strong> → <strong>Créer</strong></li>
+                                            <li>Sélectionnez le dépôt et effectuez le comptage</li>
+                                            <li>Cliquez sur <strong>Finaliser</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTransfert">
+                                        Création d'un transfert
+                                    </button>
+                                </h2>
+                                <div id="collapseTransfert" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Transferts</strong> → <strong>Créer</strong></li>
+                                            <li>Sélectionnez le dépôt source et destination, ajoutez les produits</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true)
+                        {
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRapport">
+                                        Création d'un rapport programmé
+                                    </button>
+                                </h2>
+                                <div id="collapseRapport" class="accordion-collapse collapse" data-bs-parent="#accordionCreer">
+                                    <div class="accordion-body">
+                                        <ol>
+                                            <li>Allez dans <strong>Rapports programmés</strong> → <strong>Créer</strong></li>
+                                            <li>Configurez le type de rapport, la fréquence et les destinataires</li>
+                                            <li>Cliquez sur <strong>Enregistrer</strong></li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Comment ça fonctionne... ? -->
+        <div class="card surface mb-4" id="comment-fonctionne">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.08) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 2px solid rgba(52, 129, 192, 0.2);">
+                <h2 class="card-title mb-0 d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    <span style="color: #3481c0;">Comment ça fonctionne... ?</span>
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="accordionFonctionne">
+                    @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true || ViewBag.IsCaissier == true)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCaisse">
+                                    Point de vente (Caisse)
+                                </button>
+                            </h2>
+                            <div id="collapseCaisse" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                                <div class="accordion-body">
+                                    <p>Le point de vente permet d'enregistrer les ventes :</p>
+                                    <ol>
+                                        <li>Scannez ou recherchez un produit</li>
+                                        <li>Ajoutez-le au panier</li>
+                                        <li>Répétez pour tous les produits</li>
+                                        <li>Choisissez le mode de paiement</li>
+                                        <li>Finalisez la vente</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true || ViewBag.IsGestionnaireStock == true)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStock">
+                                    Gestion des stocks
+                                </button>
+                            </h2>
+                            <div id="collapseStock" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                                <div class="accordion-body">
+                                    <p>La gestion des stocks permet de suivre les quantités disponibles :</p>
+                                    <ul>
+                                        <li>Consultation des stocks par dépôt</li>
+                                        <li>Ajustement manuel des quantités</li>
+                                        <li>Suivi des mouvements de stock</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAchats">
+                                    Achats et réceptions
+                                </button>
+                            </h2>
+                            <div id="collapseAchats" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                                <div class="accordion-body">
+                                    <p>Les achats permettent de commander des produits :</p>
+                                    <ol>
+                                        <li>Créez un achat avec un fournisseur</li>
+                                        <li>Ajoutez les produits commandés</li>
+                                        <li>Lors de la réception, validez les quantités reçues</li>
+                                        <li>Les stocks sont automatiquement mis à jour</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInventaires">
+                                    Inventaires
+                                </button>
+                            </h2>
+                            <div id="collapseInventaires" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                                <div class="accordion-body">
+                                    <p>Les inventaires permettent de vérifier les stocks :</p>
+                                    <ol>
+                                        <li>Créez un inventaire pour un dépôt</li>
+                                        <li>Comptez physiquement les produits</li>
+                                        <li>Enregistrez les quantités réelles</li>
+                                        <li>Finalisez l'inventaire pour ajuster les stocks</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTransferts">
+                                    Transferts inter-dépôts
+                                </button>
+                            </h2>
+                            <div id="collapseTransferts" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                                <div class="accordion-body">
+                                    <p>Les transferts permettent de déplacer des produits :</p>
+                                    <ol>
+                                        <li>Créez un transfert depuis un dépôt source</li>
+                                        <li>Sélectionnez le dépôt destination</li>
+                                        <li>Ajoutez les produits à transférer</li>
+                                        <li>Le dépôt destination doit recevoir le transfert</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNotifications">
+                                Notifications temps réel
+                            </button>
+                        </h2>
+                        <div id="collapseNotifications" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                            <div class="accordion-body">
+                                <p>Les notifications vous alertent en temps réel :</p>
+                                <ul>
+                                    <li>Stocks faibles</li>
+                                    <li>Nouvelles ventes</li>
+                                    <li>Transferts en attente</li>
+                                    <li>Autres événements importants</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRapportsProgrammes">
+                                    Rapports programmés
+                                </button>
+                            </h2>
+                            <div id="collapseRapportsProgrammes" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                                <div class="accordion-body">
+                                    <p>Les rapports programmés sont envoyés automatiquement :</p>
+                                    <ul>
+                                        <li>Configuration de la fréquence (quotidien, hebdomadaire, mensuel)</li>
+                                        <li>Choix du type de rapport</li>
+                                        <li>Envoi automatique par email</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (ViewBag.IsAdminReseau == true || ViewBag.IsManagerBoutique == true || ViewBag.IsCaissier == true)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePaiements">
+                                    Paiements intégrés
+                                </button>
+                            </h2>
+                            <div id="collapsePaiements" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                                <div class="accordion-body">
+                                    <p>Les paiements intégrés permettent de gérer les transactions :</p>
+                                    <ul>
+                                        <li>Suivi des paiements</li>
+                                        <li>Historique des transactions</li>
+                                        <li>Rapports de paiements</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (ViewBag.IsAdminReseau == true)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSecurite">
+                                    Sécurité avancée (Journal des connexions)
+                                </button>
+                            </h2>
+                            <div id="collapseSecurite" class="accordion-collapse collapse" data-bs-parent="#accordionFonctionne">
+                                <div class="accordion-body">
+                                    <p>Le journal des connexions enregistre toutes les activités :</p>
+                                    <ul>
+                                        <li>Connexions et déconnexions</li>
+                                        <li>Actions effectuées</li>
+                                        <li>Horodatage précis</li>
+                                        <li>Consultation de l'historique</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card surface mb-4" id="faq">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.08) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 2px solid rgba(52, 129, 192, 0.2);">
+                <h2 class="card-title mb-0 d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span style="color: #3481c0;">Questions fréquentes (FAQ)</span>
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="accordionFAQ">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Comment changer mon mot de passe ?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                            <div class="accordion-body">
+                                Allez dans votre profil utilisateur et sélectionnez "Changer le mot de passe". Entrez votre mot de passe actuel et le nouveau mot de passe.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Comment modifier une vente déjà enregistrée ?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                            <div class="accordion-body">
+                                Les ventes enregistrées ne peuvent pas être modifiées pour garantir l'intégrité des données. Vous pouvez créer une note de crédit si nécessaire.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Que faire si un produit n'est pas en stock ?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                            <div class="accordion-body">
+                                Vous pouvez créer un achat pour commander le produit auprès d'un fournisseur, ou effectuer un transfert depuis un autre dépôt si disponible.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation -->
+        <div class="card surface mb-4" id="documentation">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(52, 129, 192, 0.08) 0%, rgba(219, 180, 56, 0.05) 100%); border-bottom: 2px solid rgba(52, 129, 192, 0.2);">
+                <h2 class="card-title mb-0 d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <span style="color: #3481c0;">Documentation</span>
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <a asp-action="Documentation" asp-route-document="guide-utilisation" class="text-decoration-none document-card">
+                            <div class="card surface h-100" style="border-left: 4px solid #3481c0;">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="document-icon" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(52, 129, 192, 0.1) 0%, rgba(52, 129, 192, 0.05) 100%); display: flex; align-items: center; justify-content: center;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3481c0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1" style="color: #101828;">Guide d'utilisation</h5>
+                                            <p class="mb-0 text-muted small">Guide complet de l'application</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a asp-action="Documentation" asp-route-document="workflow-complet" class="text-decoration-none document-card">
+                            <div class="card surface h-100" style="border-left: 4px solid #dbb438;">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="document-icon" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(219, 180, 56, 0.1) 0%, rgba(219, 180, 56, 0.05) 100%); display: flex; align-items: center; justify-content: center;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dbb438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1" style="color: #101828;">Workflow complet</h5>
+                                            <p class="mb-0 text-muted small">Processus détaillés de l'application</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/aide.css" asp-append-version="true" />
+}
